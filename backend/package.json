@@ -2,9 +2,11 @@
   "name": "sih-backend",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "npm run dev"
+    "test": "npm run dev",
+    "dev" : "nodemon src/indexjs"
   },
   "keywords": [
     "javascript",
@@ -13,5 +15,8 @@
     "mongoose"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }
