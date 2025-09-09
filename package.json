@@ -1,0 +1,17 @@
+{
+  "name": "sih-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run dev"
+  },
+  "keywords": [
+    "javascript",
+    "nodejs",
+    "mongodb",
+    "mongoose"
+  ],
+  "author": "",
+  "license": "ISC"
+}
