@@ -6,7 +6,7 @@ import {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
-} from './controllers/userController.js';
+} from "../controllers/usercontroller.js";
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();

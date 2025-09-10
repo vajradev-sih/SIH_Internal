@@ -36,7 +36,9 @@ const userSchema = new Schema(
         role: {
             type: String,
             enum: ['citizen', 'department_admin', 'super_admin'],
+            default : 'citizen',
             required: true
+            
         },
         phoneNumber: {
             type: String,
