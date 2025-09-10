@@ -27,7 +27,10 @@ const userSchema = new Schema(
             unique: true,
             lowercase: true,
             trim: true,
-            match: [/^\\S+@\\S+\\.\\S+$/, 'Please provide a valid email address'] 
+            match: [
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                'Please provide a valid email address'
+            ]
         },
         passwordHash: {
             type: String,
@@ -36,14 +39,16 @@ const userSchema = new Schema(
         role: {
             type: String,
             enum: ['citizen', 'department_admin', 'super_admin'],
-            default : 'citizen',
+            default: 'citizen',
             required: true
-            
         },
         phoneNumber: {
             type: String,
             trim: true,
-            match: [/^\\+?[0-9]{7,15}$/, 'Please provide a valid phone number.']
+            match: [
+                /^[0-9]{10}$/,
+                'Please provide a valid 10-digit phone number'
+            ]
         },
         refreshToken: {
             type: String,

@@ -7,9 +7,10 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
 
+// Helper function to generate tokens
 const generateAccessAndRefreshTokens = async(userId) => {
     try {
-        const user = await User.findById(userId);
+        const user = await User.findOne({ userId: userId });
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
 
@@ -24,6 +25,7 @@ const generateAccessAndRefreshTokens = async(userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
+    console.log("Received data from Postman:", req.body); 
     const { username, name, email, password, role, phoneNumber } = req.body;
 
     if (!username || !name || !email || !password || !role || !phoneNumber) {
@@ -76,7 +78,7 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid password");
     }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user.userId);
 
     const options = { httpOnly: true, secure: true };
     return res
@@ -87,8 +89,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-    await User.findByIdAndUpdate(
-        req.user._id,
+    await User.findOneAndUpdate(
+        { userId: req.user.userId },
         { $set: { refreshToken: undefined } },
         { new: true }
     );
@@ -109,7 +111,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
     const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const user = await User.findById(decodedToken.id);
+    const user = await User.findOne({ userId: decodedToken.userId });
 
     if (!user) {
         throw new ApiError(401, "Invalid refresh token");
@@ -119,7 +121,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Refresh token is expired or used");
     }
 
-    const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
+    const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user.userId);
 
     const options = { httpOnly: true, secure: true };
     return res
@@ -147,13 +149,13 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await User.findByIdAndUpdate(user._id, { passwordHash: hashedPassword });
+    await User.findOneAndUpdate({ userId: user.userId }, { passwordHash: hashedPassword });
 
     return res.status(200).json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const user = await User.findOne({ userId: req.user.userId });
     if (!user) {
         throw new ApiError(404, "User not found");
     }
