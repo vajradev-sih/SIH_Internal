@@ -26,7 +26,7 @@ const userSchema = new Schema(
             unique: true,
             lowercase: true,
             trim: true,
-            match: [/^\\S+@\\S+\\.\\S+$/, 'Please provide a valid email address'] 
+            match: [/^\\S+@\\S+\\.\\S+$/, 'Please provide a valid email address']
         },
         password_hash: {
             type: String,
@@ -42,10 +42,17 @@ const userSchema = new Schema(
             trim: true,
             // Using regex for validation
             match: [/^\\+?[0-9]{7,15}$/, 'Please provide a valid phone number.']
+        },
+        refreshToken: { // The field for refresh token
+            type: String,
+            trim: true
         }
 
     }, { timestamps: true }
 
 )
+
+
+
 
 export const User = mongoose.model("User", userSchema)
