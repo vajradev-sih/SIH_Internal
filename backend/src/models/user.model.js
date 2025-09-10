@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import jwt from 'jsonwebtoken';
 
 const userSchema = new Schema(
     {
@@ -26,33 +27,56 @@ const userSchema = new Schema(
             unique: true,
             lowercase: true,
             trim: true,
-            match: [/^\\S+@\\S+\\.\\S+$/, 'Please provide a valid email address']
+            match: [/^\\S+@\\S+\\.\\S+$/, 'Please provide a valid email address'] 
         },
-        password_hash: {
+        passwordHash: {
             type: String,
-            required: [true, "PASSWORD IS REQUIRED"]
+            required: true
         },
         role: {
             type: String,
             enum: ['citizen', 'department_admin', 'super_admin'],
             required: true
         },
-        phone_number: {
+        phoneNumber: {
             type: String,
             trim: true,
-            // Using regex for validation
             match: [/^\\+?[0-9]{7,15}$/, 'Please provide a valid phone number.']
         },
-        refreshToken: { // The field for refresh token
+        refreshToken: {
             type: String,
             trim: true
         }
+    },
+    { timestamps: true }
+);
 
-    }, { timestamps: true }
+// Method to generate a JSON Web Token
+userSchema.methods.generateAccessToken = function(){
+    return jwt.sign(
+        {
+            userId: this.userId,
+            email: this.email,
+            role: this.role
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
 
-)
+// Method to generate a refresh token
+userSchema.methods.generateRefreshToken = function(){
+    return jwt.sign(
+        {
+            userId: this.userId,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
+}
 
-
-
-
-export const User = mongoose.model("User", userSchema)
+export const User = mongoose.model("User", userSchema);
