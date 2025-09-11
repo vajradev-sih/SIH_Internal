@@ -1,6 +1,9 @@
+// backend/src/models/user.model.js (updated excerpt)
+
 import mongoose, { Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto'; // Import crypto for token generation
 
 const userSchema = new Schema(
     {
@@ -53,7 +56,10 @@ const userSchema = new Schema(
         refreshToken: {
             type: String,
             trim: true
-        }
+        },
+        // New fields for password reset
+        passwordResetToken: String,
+        passwordResetExpires: Date
     },
     { timestamps: true }
 );
@@ -85,5 +91,19 @@ userSchema.methods.generateRefreshToken = function(){
         }
     )
 }
+
+// New method to generate a password reset token
+userSchema.methods.getResetPasswordToken = function() {
+    // Generate a random token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Hash the token and save it to the database
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    // Set token expiry to 10 minutes
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
+};
 
 export const User = mongoose.model("User", userSchema);

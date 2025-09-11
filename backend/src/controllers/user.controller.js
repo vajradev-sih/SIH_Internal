@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import crypto from 'crypto';
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
 
@@ -163,6 +164,62 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, user, "Current user fetched successfully"));
 });
 
+// New controller function to handle forgot password requests
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required to reset password.");
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new ApiError(404, "User not found with that email address.");
+    }
+
+    // Generate a reset token and save it to the database
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+
+    // In a real application, you would send an email here.
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
+    console.log(`Password reset URL: ${resetUrl}`);
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, `Password reset link sent to ${email}.`)
+    );
+});
+
+// New controller function to handle password reset
+const resetPassword = asyncHandler(async (req, res) => {
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired password reset token.");
+    }
+
+    const { newPassword } = req.body;
+    if (!newPassword || !passwordRegex.test(newPassword)) {
+        throw new ApiError(400, 'New password does not meet complexity requirements.');
+    }
+
+    // Update user's password and clear the reset token
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Password has been reset successfully.")
+    );
+});
+
 export {
     registerUser,
     loginUser,
@@ -170,4 +227,6 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
+    forgotPassword,
+    resetPassword
 };

@@ -1,3 +1,5 @@
+// backend/src/routes/user.routes.js (updated excerpt)
+
 import express from 'express';
 import {
     registerUser,
@@ -6,6 +8,8 @@ import {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
+    forgotPassword, // New import
+    resetPassword   // New import
 } from "../controllers/user.controller.js";
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
@@ -14,6 +18,10 @@ const router = express.Router();
 // Public routes for user authentication
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+
+// New public routes for password reset
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 
 // Protected routes (require a valid token)
 router.post('/logout', authMiddleware, logoutUser);

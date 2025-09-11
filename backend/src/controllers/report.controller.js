@@ -5,17 +5,25 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ReportHistory } from '../models/reportHistory.model.js';
 import { Notification } from '../models/notifications.model.js';
+import { Category } from '../models/category.model.js'; // Import the Category model
 
 // Controller to submit a new civic issue report
 const submitReport = asyncHandler(async (req, res) => {
     const { title, description, categoryId, locationLat, locationLng } = req.body;
     const { userId } = req.user;
 
+    // 1. Validate required fields
     if (!title || !description || !categoryId || !locationLat || !locationLng) {
-        throw new ApiError(400, 'All required fields are needed for the report.');
+        throw new ApiError(400, 'All required fields (title, description, categoryId, locationLat, locationLng) are needed for the report.');
     }
 
-    // Check if files were uploaded
+    // 2. Validate category existence
+    const categoryExists = await Category.findOne({ categoryId });
+    if (!categoryExists) {
+        throw new ApiError(404, 'The specified categoryId does not exist.');
+    }
+
+    // 3. Check if files were uploaded
     if (!req.files || !req.files.photo) {
         throw new ApiError(400, 'A photo is required for the report.');
     }
@@ -46,10 +54,10 @@ const submitReport = asyncHandler(async (req, res) => {
         categoryId,
         title,
         description,
-        photoUrl,
-        voiceRecordingUrl,
-        locationLat,
-        locationLng
+        photo_url: photoUrl, // Corrected from photoUrl to photo_url to match model
+        voice_recording_url: voiceRecordingUrl, // Corrected from voiceRecordingUrl to voice_recording_url to match model
+        location_lat: locationLat, // Corrected from locationLat to location_lat to match model
+        location_lng: locationLng // Corrected from locationLng to location_lng to match model
     });
 
     if (!newReport) {

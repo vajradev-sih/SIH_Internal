@@ -1,3 +1,5 @@
+// backend/src/app.js
+
 import express from 'express';
 import { urlencoded } from "express";
 import cors from "cors";
@@ -12,7 +14,8 @@ import analyticsRoutes from './routes/analytic.router.js';
 import adminRoutes from './routes/admin.router.js';
 import reportHistoryRoutes from './routes/reportHistory.router.js';
 import reportRoutes from './routes/report.router.js';
-
+import reportAssignmentRoutes from './routes/reportAssignment.router.js';
+import { errorMiddleware } from './middlewares/error.middleware.js'; // Import the new error handling middleware
 
 const app = express();
 
@@ -57,6 +60,14 @@ app.use("/api/v1/reports", reportRoutes);
 
 // Base route for report history
 app.use("/api/v1/reports", reportHistoryRoutes);
+
+// Base route for report assignments
+app.use("/api/v1/assignments", reportAssignmentRoutes);
+
+// Apply the global error handling middleware.
+// This MUST be the last middleware added.
+app.use(errorMiddleware);
+
 
 // This app object is exported to be used in index.js
 export { app };
