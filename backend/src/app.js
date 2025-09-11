@@ -1,5 +1,3 @@
-// backend/src/app.js
-
 import express from 'express';
 import { urlencoded } from "express";
 import cors from "cors";
@@ -15,7 +13,8 @@ import adminRoutes from './routes/admin.router.js';
 import reportHistoryRoutes from './routes/reportHistory.router.js';
 import reportRoutes from './routes/report.router.js';
 import reportAssignmentRoutes from './routes/reportAssignment.router.js';
-import { errorMiddleware } from './middlewares/error.middleware.js'; // Import the new error handling middleware
+import superAdminRoutes from './routes/superAdmin.router.js'; // New import
+import { errorMiddleware } from './middlewares/error.middleware.js';
 
 const app = express();
 
@@ -34,7 +33,6 @@ app.use(express.static("public"));
 
 // Middleware to parse cookies
 app.use(cookieParser());
-
 
 // ------------------ API Routes ------------------
 // Base route for all user-related endpoints
@@ -64,10 +62,12 @@ app.use("/api/v1/reports", reportHistoryRoutes);
 // Base route for report assignments
 app.use("/api/v1/assignments", reportAssignmentRoutes);
 
+// New super admin routes
+app.use("/api/v1/super-admin", superAdminRoutes);
+
 // Apply the global error handling middleware.
 // This MUST be the last middleware added.
 app.use(errorMiddleware);
-
 
 // This app object is exported to be used in index.js
 export { app };

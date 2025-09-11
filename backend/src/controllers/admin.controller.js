@@ -1,5 +1,3 @@
-// backend/src/controllers/admin.controller.js
-
 import { Report } from '../models/report.model.js';
 import { ReportAssignment } from '../models/reportAssignment.model.js';
 import { ReportHistory } from '../models/reportHistory.model.js';
@@ -7,20 +5,11 @@ import { Notification } from '../models/notifications.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-
-// Middleware to check if the user is an admin or super_admin
-const isAdmin = (req, res, next) => {
-    const { role } = req.user;
-    if (role === 'department_admin' || role === 'super_admin') {
-        next();
-    } else {
-        throw new ApiError(403, "Forbidden: You do not have administrative access.");
-    }
-};
+import { isAdmin } from '../middlewares/admin.middleware.js';
 
 // Update a report's status
 const updateReportStatus = asyncHandler(async (req, res) => {
-    // This function will be protected by isAdmin middleware
+    // This function will be protected by isAdmin and isDepartmentAdmin middleware
     const { reportId } = req.params;
     const { newStatus, remarks } = req.body;
     const { userId } = req.user;

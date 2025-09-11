@@ -181,15 +181,12 @@ const forgotPassword = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found with that email address.");
     }
 
-    // Generate a reset token and save it to the database
     const resetToken = user.getResetPasswordToken();
     await user.save({ validateBeforeSave: false });
 
-    // The URL for the user to reset their password
     const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
     const message = `You are receiving this email because you (or someone else) has requested a password reset. Please click on this link to reset your password: \n\n${resetUrl}\n\nIf you did not request this, please ignore this email.`;
 
-    // Use the new sendEmail utility to simulate sending the email
     try {
         await sendEmail({
             email: user.email,
@@ -203,9 +200,10 @@ const forgotPassword = asyncHandler(async (req, res) => {
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
         await user.save({ validateBeforeSave: false });
-        throw new ApiError(500, "There was an issue sending the email. Please try again later.");
+        throw error; // Re-throw the ApiError from the sendEmail utility
     }
 });
+
 
 // New controller function to handle password reset
 const resetPassword = asyncHandler(async (req, res) => {

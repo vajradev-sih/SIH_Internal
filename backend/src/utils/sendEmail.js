@@ -1,36 +1,34 @@
-// backend/src/utils/sendEmail.js
+import nodemailer from 'nodemailer';
+import { ApiError } from './ApiError.js';
 
-// In a production environment, you would configure and use an email service here.
-// Example: using Nodemailer
-// import nodemailer from 'nodemailer';
-
-// const transporter = nodemailer.createTransport({
-//     service: process.env.EMAIL_SERVICE,
-//     auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASSWORD
-//     }
-// });
+// Transporter configuration for a real email service
+const transporter = nodemailer.createTransport({
+    // For services like Gmail, you can use a predefined service option.
+    // For other services, you may need to provide host, port, and secure options.
+    // service: process.env.EMAIL_SERVICE,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
 const sendEmail = async (options) => {
-    // Placeholder for sending an email.
-    // For this hackathon, we will log the email details to the console.
-    console.log(`\n--- Sending Email ---`);
-    console.log(`To: ${options.email}`);
-    console.log(`Subject: ${options.subject}`);
-    console.log(`Message: ${options.message}`);
-    console.log(`\n---------------------\n`);
-
-    // In a real application, you would uncomment the following lines:
-    /*
-    const mailOptions = {
-        from: process.env.EMAIL_FROM,
-        to: options.email,
-        subject: options.subject,
-        html: options.message
-    };
-    await transporter.sendMail(mailOptions);
-    */
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: options.email,
+            subject: options.subject,
+            html: options.message
+        };
+        await transporter.sendMail(mailOptions);
+        console.log(`Email sent successfully to ${options.email}`);
+    } catch (error) {
+        console.error(`Error sending email: ${error.message}`);
+        throw new ApiError(500, "There was an issue sending the email. Please try again later.");
+    }
 };
 
 export default sendEmail;
