@@ -24,13 +24,15 @@ const generateAccessAndRefreshTokens = async(userId) => {
         throw new ApiError(500, "Something went wrong while generating access and refresh token");
     }
 };
+// backend/src/controllers/user.controller.js (updated registerUser function)
 
 const registerUser = asyncHandler(async (req, res) => {
     console.log("Received data from Postman:", req.body); 
-    const { username, name, email, password, role, phoneNumber } = req.body;
+    const { username, name, email, password, phoneNumber } = req.body;
+    // The role is no longer taken from the request body
 
-    if (!username || !name || !email || !password || !role || !phoneNumber) {
-        throw new ApiError(400, 'All fields are required.');
+    if (!username || !name || !email || !password || !phoneNumber) {
+        throw new ApiError(400, 'All required fields are needed for registration.');
     }
 
     if (!passwordRegex.test(password)) {
@@ -44,12 +46,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Hardcode the role to 'citizen' for all new registrations
     const newUser = await User.create({
         username,
         name,
         email,
         passwordHash: hashedPassword,
-        role,
+        role: 'citizen', // Hardcoded role
         phoneNumber
     });
 
