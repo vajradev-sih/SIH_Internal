@@ -11,6 +11,8 @@ import departmentRoutes from './routes/department.router.js';
 import analyticsRoutes from './routes/analytic.router.js';
 import adminRoutes from './routes/admin.router.js';
 import reportHistoryRoutes from './routes/reportHistory.router.js';
+import reportRoutes from './routes/report.router.js';
+
 
 const app = express();
 
@@ -49,6 +51,9 @@ app.use("/api/v1/analytics", analyticsRoutes);
 
 // Base route for all admin-related endpoints
 app.use("/api/v1/admin", adminRoutes);
+
+// Base route for all report-related endpoints
+app.use("/api/v1/reports", reportRoutes);
 
 // Base route for report history
 app.use("/api/v1/reports", reportHistoryRoutes);
