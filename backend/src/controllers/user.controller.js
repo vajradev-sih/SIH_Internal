@@ -5,6 +5,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import crypto from 'crypto';
+import sendEmail from '../utils/sendEmail.js'; // Import the new email utility
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
 
@@ -184,13 +185,26 @@ const forgotPassword = asyncHandler(async (req, res) => {
     const resetToken = user.getResetPasswordToken();
     await user.save({ validateBeforeSave: false });
 
-    // In a real application, you would send an email here.
+    // The URL for the user to reset their password
     const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
-    console.log(`Password reset URL: ${resetUrl}`);
+    const message = `You are receiving this email because you (or someone else) has requested a password reset. Please click on this link to reset your password: \n\n${resetUrl}\n\nIf you did not request this, please ignore this email.`;
 
-    return res.status(200).json(
-        new ApiResponse(200, {}, `Password reset link sent to ${email}.`)
-    );
+    // Use the new sendEmail utility to simulate sending the email
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Password Reset Request',
+            message
+        });
+        res.status(200).json(
+            new ApiResponse(200, {}, `Password reset link sent to ${email}.`)
+        );
+    } catch (error) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+        throw new ApiError(500, "There was an issue sending the email. Please try again later.");
+    }
 });
 
 // New controller function to handle password reset
