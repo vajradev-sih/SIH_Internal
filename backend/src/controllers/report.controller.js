@@ -5,7 +5,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ReportHistory } from '../models/reportHistory.model.js';
 import { Notification } from '../models/notifications.model.js';
-import { Category } from '../models/category.model.js'; // Import the Category model
+import { Category } from '../models/category.model.js';
 
 // Controller to submit a new civic issue report
 const submitReport = asyncHandler(async (req, res) => {
@@ -24,22 +24,21 @@ const submitReport = asyncHandler(async (req, res) => {
     }
 
     // 3. Check if files were uploaded
-    if (!req.files || !req.files.photo) {
+    if (!req.files || !req.files.photo || !req.files.photo[0]) {
         throw new ApiError(400, 'A photo is required for the report.');
     }
 
-    // Since we're using express-fileupload, req.files is an object where keys are field names.
-    const photoLocalPath = req.files.photo.tempFilePath;
-    const voiceRecordingLocalPath = req.files.voiceRecording?.tempFilePath;
+    const photoLocalPath = req.files.photo[0].path;
+    const voiceRecordingLocalPath = req.files.voiceRecording?.[0]?.path;
 
-    // Upload photo to cloudinary
+    // 4. Upload photo to Cloudinary
     const uploadedPhoto = await uploadOnCloudinary(photoLocalPath);
     if (!uploadedPhoto) {
         throw new ApiError(500, 'Failed to upload photo to cloud service.');
     }
     const photoUrl = uploadedPhoto.secure_url;
 
-    // Upload voice recording if it exists
+    // 5. Upload voice recording if it exists
     let voiceRecordingUrl = null;
     if (voiceRecordingLocalPath) {
         const uploadedVoiceRecording = await uploadOnCloudinary(voiceRecordingLocalPath);
@@ -49,22 +48,23 @@ const submitReport = asyncHandler(async (req, res) => {
         voiceRecordingUrl = uploadedVoiceRecording.secure_url;
     }
 
+    // 6. Create new report in DB
     const newReport = await Report.create({
         userId,
         categoryId,
         title,
         description,
-        photo_url: photoUrl, // Corrected from photoUrl to photo_url to match model
-        voice_recording_url: voiceRecordingUrl, // Corrected from voiceRecordingUrl to voice_recording_url to match model
-        location_lat: locationLat, // Corrected from locationLat to location_lat to match model
-        location_lng: locationLng // Corrected from locationLng to location_lng to match model
+        photo_url: photoUrl,
+        voice_recording_url: voiceRecordingUrl,
+        location_lat: locationLat,
+        location_lng: locationLng
     });
 
     if (!newReport) {
         throw new ApiError(500, 'Failed to create new report.');
     }
 
-    // Log the initial report status to history
+    // 7. Log initial report status in history
     await ReportHistory.create({
         reportId: newReport.reportId,
         previousStatus: null,
@@ -73,16 +73,15 @@ const submitReport = asyncHandler(async (req, res) => {
         remarks: 'Report submitted by user.'
     });
 
-    // Create a notification for the admin
-    // You'll need to fetch the admin user IDs to send them a notification.
-    // For simplicity, we'll skip this part for now.
+    // (Optional) Skip notification logic for now
 
     return res.status(201).json(
         new ApiResponse(201, newReport, 'Report submitted successfully.')
     );
 });
 
-// Controller to fetch all reports submitted by the authenticated user
+// Other report controller functions remain unchanged
+
 const getMyReports = asyncHandler(async (req, res) => {
     const { userId } = req.user;
 
@@ -99,7 +98,6 @@ const getMyReports = asyncHandler(async (req, res) => {
     );
 });
 
-// Controller to fetch all reports (for admin dashboard)
 const getAllReports = asyncHandler(async (req, res) => {
     const { userId } = req.user;
 
@@ -117,7 +115,6 @@ const getAllReports = asyncHandler(async (req, res) => {
     );
 });
 
-// Controller to fetch a single report by ID
 const getReportById = asyncHandler(async (req, res) => {
     const { reportId } = req.params;
 
@@ -134,10 +131,9 @@ const getReportById = asyncHandler(async (req, res) => {
     );
 });
 
-
 export {
     getReportById,
     submitReport,
     getMyReports,
     getAllReports
-}
+};
