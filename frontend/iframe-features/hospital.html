@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nearby Hospitals</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f8f9fa;
+      color: #222;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(90deg, #005aa7, #1a2980);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .hero p {
+      font-size: 16px;
+      margin-top: 10px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    /* Layout for map and hospitals side by side */
+    .map-hospitals-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 95px;
+      max-width: 90%;
+      margin: 30px auto;
+    }
+
+    .map-container {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .hospitals-wrapper {
+      flex: 1;
+      min-width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+
+    /* Map Section */
+    #map {
+      height: 400px;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Hospitals Section */
+    .hospitals-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #005aa7;
+      margin-bottom: 20px;
+    }
+
+    .hospitals-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .hospital-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      border: 2px solid #1a2980;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      transition: 0.3s;
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .hospital-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .hospital-card h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #1a2980;
+    }
+
+    .hospital-card a {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 14px;
+      color: #005aa7;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .hospital-card a:hover {
+      text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .map-hospitals-layout {
+        flex-direction: column;
+      }
+
+      .hospitals-wrapper {
+        max-height: none;
+      }
+
+      #map {
+        height: 300px;
+        /* Smaller map on mobile */
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Hero Banner -->
+  <div class="hero">
+    <h1>Nearby Healthcare Services</h1>
+    <p>Find Emergency Care | Hospitals | Medical Centers</p>
+  </div>
+
+  <!-- Map and Hospitals Side by Side -->
+  <div class="map-hospitals-layout">
+    <div class="map-container">
+      <!-- Map -->
+      <div id="map"></div>
+    </div>
+    <div class="hospitals-wrapper">
+      <!-- Hospitals Section -->
+      <div class="hospitals-title">Nearby Hospitals</div>
+      <div id="hospitals" class="hospitals-grid">
+        <p style="text-align:center;">Fetching hospitals...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize map
+    const map = L.map('map').setView([28.6139, 77.2090], 13); // Default: Delhi
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Custom icons
+    const hospitalIcon = L.icon({
+      iconUrl: "https://img.icons8.com/color/48/000000/hospital-building.png",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    const userIcon = L.icon({
+      iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    async function fetchHospitals(lat, lon) {
+      try {
+        // Define the query to find hospitals and clinics
+        const query = `
+          [out:json];
+          (
+            node["amenity"="hospital"](around:5000, ${lat}, ${lon});
+            way["amenity"="hospital"](around:5000, ${lat}, ${lon});
+            relation["amenity"="hospital"](around:5000, ${lat}, ${lon});
+            node["amenity"="clinic"](around:3000, ${lat}, ${lon});
+            way["amenity"="clinic"](around:3000, ${lat}, ${lon});
+            relation["amenity"="clinic"](around:3000, ${lat}, ${lon});
+          );
+          out center;
+        `;
+
+        // Create URL for the Overpass API request
+        const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
+
+        // Fetch data from Overpass API
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Get the container element and clear it
+        const hospitalList = document.getElementById("hospitals");
+        hospitalList.innerHTML = "";
+
+        // If no data found, show sample data instead
+        if (!data.elements || data.elements.length === 0) {
+          hospitalList.innerHTML = "<p style='text-align:center;'>No hospitals found nearby. Showing sample hospitals.</p>";
+
+          // Sample data
+          const sampleHospitals = [
+            {
+              name: "City General Hospital",
+              type: "Hospital",
+              lat: lat + 0.01,
+              lon: lon + 0.005
+            },
+            {
+              name: "Community Medical Center",
+              type: "Hospital",
+              lat: lat - 0.008,
+              lon: lon + 0.003
+            },
+            {
+              name: "Quick Care Clinic",
+              type: "Clinic",
+              lat: lat + 0.003,
+              lon: lon - 0.007
+            }
+          ];
+
+          // Add sample hospitals to map and list
+          sampleHospitals.forEach(hospital => {
+            // Add marker
+            L.marker([hospital.lat, hospital.lon], { icon: hospitalIcon })
+              .addTo(map)
+              .bindPopup(`<b>${hospital.name}</b><br>${hospital.type}`);
+
+            // Add to list
+            addHospitalCard(hospital.name, hospital.type, hospital.lat, hospital.lon);
+          });
+
+          return;
+        }
+
+        // Process actual data if available
+        data.elements.forEach((el) => {
+          const hLat = el.lat || (el.center && el.center.lat);
+          const hLon = el.lon || (el.center && el.center.lon);
+          const name = el.tags?.name || "Unnamed Hospital";
+          const amenity = el.tags?.amenity || "healthcare";
+          const amenityType = amenity === "hospital" ? "Hospital" : "Clinic";
+
+          if (hLat && hLon) {
+            // Add marker to map
+            L.marker([hLat, hLon], { icon: hospitalIcon })
+              .addTo(map)
+              .bindPopup(`<b>${name}</b><br>${amenityType}`);
+
+            // Add card to list
+            addHospitalCard(name, amenityType, hLat, hLon);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching hospital data:", error);
+        document.getElementById("hospitals").innerHTML =
+          "<p style='text-align:center;'>Error loading hospital data. Please try again later.</p>";
+      }
+    }
+
+    // Function to add hospital card to the list
+    function addHospitalCard(name, type, lat, lon) {
+      const card = document.createElement("div");
+      card.className = "hospital-card";
+      card.innerHTML = `
+        <h3>🏥 ${name}</h3>
+        <div>${type}</div>
+        <a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}">
+          📍 Get Directions
+        </a>
+      `;
+      document.getElementById("hospitals").appendChild(card);
+    }
+
+    // Get user's location and show nearby hospitals
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        // Success callback
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          // Center map on user's location
+          map.setView([lat, lon], 14);
+
+          // Add user marker
+          L.marker([lat, lon], { icon: userIcon })
+            .addTo(map)
+            .bindPopup("📍 You are here")
+            .openPopup();
+
+          // Fetch hospitals near user's location
+          fetchHospitals(lat, lon);
+        },
+        // Error callback
+        (error) => {
+          console.error("Error getting location:", error);
+          // Use default location (Delhi) if user location is unavailable
+          fetchHospitals(28.6139, 77.2090);
+        }
+      );
+    } else {
+      // Geolocation not supported by browser
+      console.warn("Geolocation is not supported by this browser");
+      fetchHospitals(28.6139, 77.2090); // Use default location
+    }
+  </script>
+</body>
+
+</html>

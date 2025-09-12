@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Civic Resolve</title>
+    <link rel="stylesheet" href="../../style/user-style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../../Images/logo.png" alt="Civic Resolve Logo" class="sidebar-logo">
+                <h3>Civic Resolve</h3>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="bi bi-plus-circle"></i> New Complaint</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="bi bi-list-check"></i> My Complaints</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="bi bi-geo-alt"></i> Near Me</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="bi bi-bell"></i> Notifications</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="bi bi-file-earmark-text"></i> Documents</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="bi bi-gear"></i> Settings</a>
+                    </li>
+                    <li class="separator"></li>
+                    <li>
+                        <a href="#" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>&copy; 2025 Civic Resolve</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header with user info and search -->
+            <header class="dashboard-header">
+                <div class="search-container">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                
+                <div class="user-menu">
+                    <button class="notifications">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    
+                    <div class="user-profile">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Profile">
+                        <div class="user-info">
+                            <h4>Rahul Sharma</h4>
+                            <p>Citizen</p>
+                        </div>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-text">
+                    <h1>Welcome back, Rahul!</h1>
+                    <p>Here's what's happening with your civic complaints</p>
+                </div>
+                <div class="date-time">
+                    <p id="current-date">Loading date...</p>
+                </div>
+            </section>
+
+            <!-- Quick Stats Cards -->
+            <section class="stats-cards">
+                <div class="stat-card">
+                    <div class="card-icon blue">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>5</h3>
+                        <p>Total Complaints</p>
+                    </div>
+                    <div class="card-stats">
+                        <p><i class="bi bi-arrow-up"></i> 2 this month</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="card-icon green">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>3</h3>
+                        <p>Resolved</p>
+                    </div>
+                    <div class="card-stats">
+                        <p><i class="bi bi-arrow-up"></i> 1 this week</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="card-icon orange">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>2</h3>
+                        <p>In Progress</p>
+                    </div>
+                    <div class="card-stats">
+                        <p>Avg. Resolve: <br> 4 days</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="card-icon purple">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>4.7</h3>
+                        <p>Satisfaction</p>
+                    </div>
+                    <div class="card-stats">
+                        <p><i class="bi bi-arrow-up"></i> Based on <br> &nbsp; &nbsp; &nbsp;feedback</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Complaints and Activity Sections -->
+            <div class="dashboard-grid">
+                <!-- Recent Complaints -->
+                <section class="recent-complaints">
+                    <div class="section-header">
+                        <h2>Recent Complaints</h2>
+                    </div>
+                    
+                    <div class="complaints-list">
+                        <div class="complaint-item">
+                            <div class="complaint-status resolved">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <div class="complaint-details">
+                                <h3>Streetlight Not Working</h3>
+                                <p>Sector 5, Road No. 3, Near Park</p>
+                                <div class="complaint-meta">
+                                    <span><i class="bi bi-calendar3"></i> 15 Aug 2023</span>
+                                    <span><i class="bi bi-tag"></i> Infrastructure</span>
+                                </div>
+                            </div>
+                            <div class="complaint-actions">
+                                <button class="view-btn">View</button>
+                            </div>
+                        </div>
+                        
+                        <div class="complaint-item">
+                            <div class="complaint-status in-progress">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                            <div class="complaint-details">
+                                <h3>Water Leakage Issue</h3>
+                                <p>Block C, Main Street, Near Market</p>
+                                <div class="complaint-meta">
+                                    <span><i class="bi bi-calendar3"></i> 10 Sep 2023</span>
+                                    <span><i class="bi bi-tag"></i> Water Supply</span>
+                                </div>
+                            </div>
+                            <div class="complaint-actions">
+                                <button class="view-btn">View</button>
+                            </div>
+                        </div>
+                        
+                        <div class="complaint-item">
+                            <div class="complaint-status in-progress">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                            <div class="complaint-details">
+                                <h3>Garbage Not Collected</h3>
+                                <p>Sector 8, Residential Area</p>
+                                <div class="complaint-meta">
+                                    <span><i class="bi bi-calendar3"></i> 22 Sep 2023</span>
+                                    <span><i class="bi bi-tag"></i> Sanitation</span>
+                                </div>
+                            </div>
+                            <div class="complaint-actions">
+                                <button class="view-btn">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Activity Timeline -->
+                <section class="activity-timeline">
+                    <div class="section-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon blue">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>Complaint Resolved</h3>
+                                <p>Your complaint about streetlight has been resolved.</p>
+                                <span class="timeline-time">Today, 10:30 AM</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon green">
+                                <i class="bi bi-chat-text"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>New Comment</h3>
+                                <p>Municipal worker added comment to your water leakage complaint.</p>
+                                <span class="timeline-time">Yesterday, 3:45 PM</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon orange">
+                                <i class="bi bi-gear"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>Status Updated</h3>
+                                <p>Garbage collection complaint status changed to "In Progress".</p>
+                                <span class="timeline-time">22 Sep 2023, 9:15 AM</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon purple">
+                                <i class="bi bi-file-earmark-plus"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>New Complaint Filed</h3>
+                                <p>You filed a new complaint about garbage collection.</p>
+                                <span class="timeline-time">22 Sep 2023, 8:30 AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Upcoming Maintenance and Quick Actions -->
+            <div class="dashboard-grid">
+                <!-- Upcoming Maintenance -->
+                <section class="upcoming-maintenance">
+                    <div class="section-header">
+                        <h2>Upcoming Maintenance in Your Area</h2>
+                    </div>
+                    
+                    <div class="maintenance-list">
+                        <div class="maintenance-item">
+                            <div class="maintenance-icon">
+                                <i class="bi bi-droplet"></i>
+                            </div>
+                            <div class="maintenance-details">
+                                <h3>Water Supply Interruption</h3>
+                                <p>Scheduled maintenance of water supply lines in Sector 5</p>
+                                <p class="maintenance-date"><i class="bi bi-calendar3"></i> 25 Sep 2023, 10:00 AM - 2:00 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="maintenance-item">
+                            <div class="maintenance-icon">
+                                <i class="bi bi-lightning"></i>
+                            </div>
+                            <div class="maintenance-details">
+                                <h3>Electricity Outage</h3>
+                                <p>Scheduled maintenance of electrical equipment in Block C</p>
+                                <p class="maintenance-date"><i class="bi bi-calendar3"></i> 28 Sep 2023, 9:00 AM - 12:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Quick Actions -->
+                <section class="quick-actions">
+                    <div class="section-header">
+                        <h2>Quick Actions</h2>
+                    </div>
+                    
+                    <div class="actions-grid">
+                        <a href="#" class="action-card">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>New Complaint</span>
+                        </a>
+                        <a href="#" class="action-card">
+                            <i class="bi bi-search"></i>
+                            <span>Track Complaint</span>
+                        </a>
+                        <a href="#" class="action-card">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span>Apply for Certificate</span>
+                        </a>
+                        <a href="#" class="action-card">
+                            <i class="bi bi-cash"></i>
+                            <span>Pay Utilities</span>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Current date display
+        document.addEventListener('DOMContentLoaded', function() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('current-date').textContent = today.toLocaleDateString('en-IN', options);
+            
+            // Mobile menu toggle
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.classList.add('sidebar-toggle');
+            sidebarToggle.innerHTML = '<i class="bi bi-list"></i>';
+            document.querySelector('.dashboard-header').prepend(sidebarToggle);
+            
+            sidebarToggle.addEventListener('click', function() {
+                document.querySelector('.dashboard-container').classList.toggle('sidebar-open');
+            });
+        });
+    </script>
+</body>
+
+</html>

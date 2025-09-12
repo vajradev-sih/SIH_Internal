@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EV Charging Stations Near Me</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f9fbfa;
+      color: #222;
+    }
+
+    /* 🔹 Top Bar */
+    .topbar {
+      background: #1565c0;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+    .topbar .logo {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    /* 🔹 Hero */
+    .hero {
+      background: linear-gradient(90deg, #1565c0, #43a047);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .hero p {
+      font-size: 16px;
+      margin-top: 10px;
+      color: #e3f2fd;
+    }
+
+    /* 🔹 Search Bar */
+    .search-bar {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .search-bar input, .search-bar select {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 2px solid #1565c0;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    .search-bar button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      background: #ffeb3b;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .search-bar button:hover { background: #fdd835; }
+
+    /* 🔹 Map */
+    #map {
+      height: 400px;
+      width: 90%;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* 🔹 Stations */
+    .stations-container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .stations-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #1565c0;
+      margin-bottom: 20px;
+    }
+    .stations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .station-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      border: 2px solid #43a047;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      animation: fadeInUp 0.5s ease;
+    }
+    .station-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .station-card h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #1565c0;
+    }
+    .station-card .status {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    .station-card .status.available { color: #2e7d32; }
+    .station-card .status.unavailable { color: #c62828; }
+    .station-card a {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #1565c0;
+    }
+    .station-card a:hover { text-decoration: underline; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔹 Top Bar -->
+  <div class="topbar">
+    <div class="logo">⚡ EV Finder</div>
+    <div>Powered by OpenChargeMap</div>
+  </div>
+
+  <!-- 🔹 Hero -->
+  <div class="hero">
+    <h1>Find EV Charging Stations Near You</h1>
+    <p>Quick, Reliable & Up-to-date Charging Info</p>
+  </div>
+
+  <!-- 🔹 Search -->
+  <div class="search-bar">
+    <input id="searchInput" type="text" placeholder="Enter city or area">
+    <select id="filterAvailability" onchange="applyFilters()">
+      <option value="all">All Stations</option>
+      <option value="available">Available Only</option>
+    </select>
+    <select id="filterType" onchange="applyFilters()">
+      <option value="all">All Types</option>
+      <option value="fast">Fast Chargers</option>
+      <option value="standard">Standard Chargers</option>
+    </select>
+    <button onclick="searchLocation()">Search</button>
+  </div>
+
+  <!-- 🔹 Map -->
+  <div id="map"></div>
+
+  <!-- 🔹 Stations -->
+  <div class="stations-container">
+    <div class="stations-title">Nearby Stations</div>
+    <div id="stations" class="stations-grid">
+      <p style="grid-column:1/-1; text-align:center;">Fetching EV stations...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map');
+    let userLat = null, userLon = null, allStations = [];
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const evIconGreen = L.icon({
+      iconUrl: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+      iconSize: [32,32],
+      iconAnchor: [16,32]
+    });
+    const evIconRed = L.icon({
+      iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+      iconSize: [32,32],
+      iconAnchor: [16,32]
+    });
+    const userIcon = L.icon({
+      iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+      iconSize: [32,32],
+      iconAnchor: [16,32]
+    });
+
+    // Distance calc
+    function getDistance(lat1, lon1, lat2, lon2){
+      const R = 6371;
+      const dLat = (lat2-lat1)*Math.PI/180;
+      const dLon = (lon2-lon1)*Math.PI/180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+      return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
+    }
+
+    async function fetchStations(lat, lon){
+      const url = `https://api.openchargemap.io/v3/poi/?output=json&latitude=${lat}&longitude=${lon}&distance=15&distanceunit=KM&maxresults=25&key=9b84e990-934f-4adb-8a3f-9290fbafe06b`;
+      const res = await fetch(url);
+      allStations = await res.json();
+      applyFilters();
+    }
+
+    function applyFilters(){
+      const availability = document.getElementById("filterAvailability").value;
+      const type = document.getElementById("filterType").value;
+      const stationsDiv = document.getElementById("stations");
+      stationsDiv.innerHTML = "";
+
+      allStations.forEach(station=>{
+        const coords = {
+          lat: station.AddressInfo.Latitude,
+          lon: station.AddressInfo.Longitude
+        };
+        const isAvailable = station.StatusType?.IsOperational;
+        const hasFast = station.Connections?.some(c=>c.Level?.IsFastChargeCapable);
+
+        if(availability==="available" && !isAvailable) return;
+        if(type==="fast" && !hasFast) return;
+        if(type==="standard" && hasFast) return;
+
+        const distance = getDistance(userLat,userLon,coords.lat,coords.lon);
+        const marker = L.marker([coords.lat, coords.lon], {
+          icon: isAvailable ? evIconGreen : evIconRed
+        }).addTo(map).bindPopup(`
+          ⚡ <b>${station.AddressInfo.Title}</b><br>
+          📍 ${station.AddressInfo.AddressLine1 || "No address"}<br>
+          🔋 ${isAvailable ? "Available ✅" : "Unavailable ❌"}<br>
+          📏 ${distance} km
+        `);
+
+        const card = document.createElement("div");
+        card.className = "station-card";
+        card.innerHTML = `
+          <h3>⚡ ${station.AddressInfo.Title}</h3>
+          <div class="status ${isAvailable ? 'available' : 'unavailable'}">
+            ${isAvailable ? "Available ✅" : "Unavailable ❌"}
+          </div>
+          <div>📍 ${station.AddressInfo.AddressLine1 || "No address"}</div>
+          <div>📏 Distance: ${distance} km</div>
+          <a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lon}">🚗 Get Directions</a>
+        `;
+        stationsDiv.appendChild(card);
+      });
+
+      if(stationsDiv.innerHTML==="") {
+        stationsDiv.innerHTML = "<p style='grid-column:1/-1; text-align:center;'>No matching stations found.</p>";
+      }
+    }
+
+    // Search by text
+    function searchLocation(){
+      const q = document.getElementById("searchInput").value;
+      if(!q) return;
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}`)
+        .then(r=>r.json()).then(data=>{
+          if(data.length){
+            const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
+            userLat = lat; userLon = lon;
+            map.setView([lat,lon],14);
+            fetchStations(lat,lon);
+          } else alert("Location not found");
+        });
+    }
+
+    // Init with geolocation
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(pos=>{
+        userLat = pos.coords.latitude;
+        userLon = pos.coords.longitude;
+        map.setView([userLat,userLon],14);
+        L.marker([userLat,userLon],{icon:userIcon}).addTo(map).bindPopup("📍 You are here").openPopup();
+        fetchStations(userLat,userLon);
+      }, ()=>map.setView([20.5937,78.9629],5));
+    } else {
+      map.setView([20.5937,78.9629],5);
+    }
+  </script>
+</body>
+</html>
