@@ -8,22 +8,22 @@
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
     --info-color: #3b82f6;
-    
+
     --bg-color: #f8fafc;
     --card-bg: #ffffff;
     --sidebar-bg: #1e293b;
     --sidebar-active: #334155;
-    
+
     --text-primary: #1e293b;
     --text-secondary: #64748b;
     --text-light: #94a3b8;
     --text-sidebar: rgba(255, 255, 255, 0.87);
-    
+
     --border-color: #e2e8f0;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    
+
     --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     --border-radius: 8px;
     --transition: all 0.3s ease;
@@ -713,12 +713,14 @@ body {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
-    
-    .recent-complaints, .activity-timeline, 
-    .upcoming-maintenance, .quick-actions {
+
+    .recent-complaints,
+    .activity-timeline,
+    .upcoming-maintenance,
+    .quick-actions {
         margin-bottom: 20px;
     }
-    
+
     .dashboard-grid {
         margin-bottom: 0;
     }
@@ -729,35 +731,35 @@ body {
         transform: translateX(-100%);
         width: 250px;
     }
-    
+
     .main-content {
         margin-left: 0;
         padding: 15px;
     }
-    
+
     .dashboard-container.sidebar-open .sidebar {
         transform: translateX(0);
     }
-    
+
     .sidebar-toggle {
         display: block;
     }
-    
+
     .welcome-section {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .date-time {
         text-align: left;
         margin-top: 10px;
         width: 100%;
     }
-    
+
     .stats-cards {
         grid-template-columns: 1fr;
     }
-    
+
     .search-container {
         width: 200px;
     }
@@ -768,21 +770,21 @@ body {
         flex-wrap: wrap;
         gap: 15px;
     }
-    
+
     .search-container {
         width: 100%;
         order: 1;
     }
-    
+
     .user-menu {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .actions-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .complaint-meta {
         flex-direction: column;
         gap: 5px;
@@ -822,4 +824,201 @@ body.dark-theme .notifications:hover,
 body.dark-theme .user-profile:hover,
 body.dark-theme .sidebar-toggle:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Emergency Overlay Styling */
+.emergency-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.emergency-container {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.emergency-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    border-radius: 12px 12px 0 0;
+    z-index: 1;
+}
+
+.emergency-header h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+.emergency-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.emergency-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.emergency-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.emergency-card:active {
+    transform: translateY(0);
+}
+
+.emergency-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.emergency-icon.medical {
+    background-color: rgba(54, 162, 235, 0.2);
+    color: #36a2eb;
+}
+
+.emergency-icon.police {
+    background-color: rgba(54, 85, 224, 0.2);
+    color: #3655e0;
+}
+
+.emergency-icon.fire {
+    background-color: rgba(255, 99, 132, 0.2);
+    color: #ff6384;
+}
+
+.emergency-icon.women {
+    background-color: rgba(255, 159, 64, 0.2);
+    color: #ff9f40;
+}
+
+.emergency-icon.child {
+    background-color: rgba(153, 102, 255, 0.2);
+    color: #9966ff;
+}
+
+.emergency-icon.disaster {
+    background-color: rgba(75, 192, 192, 0.2);
+    color: #4bc0c0;
+}
+
+.emergency-icon.emergency {
+    background-color: rgba(255, 205, 86, 0.2);
+    color: #ffcd56;
+}
+
+.emergency-info {
+    flex: 1;
+}
+
+.emergency-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.phone-number {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #333;
+}
+
+.call-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #25d366;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    margin-left: 10px;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+}
+
+.emergency-card:hover .call-icon {
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .emergency-container {
+        width: 95%;
+        max-height: 80vh;
+    }
+
+    .emergency-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .emergency-info h3 {
+        font-size: 0.9rem;
+    }
+
+    .phone-number {
+        font-size: 1rem;
+    }
+
+    .call-icon {
+        width: 35px;
+        height: 35px;
+    }
 }
