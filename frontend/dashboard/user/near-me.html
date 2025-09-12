@@ -553,6 +553,12 @@
                 });
             });
         }
+
+        // Add window.onload event handler to initialize functions
+        window.onload = function() {
+            setCurrentDate();
+            setupMapSwitching();
+        };
     </script>
 </body>
 
