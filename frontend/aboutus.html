@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Our Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --green-accent: #2ecc71;
+            --blue-accent: #3498db;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: white;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        /* Custom waves for Hero Section - Increased visibility */
+        .wave-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            opacity: 0.3; /* Increased opacity */
+        }
+
+        .wave-container div {
+            position: absolute;
+            background-color: var(--blue-accent);
+            border-radius: 50%;
+            animation: wave-move 25s infinite ease-in-out; /* Adjusted timing */
+            will-change: transform, opacity;
+        }
+
+        .wave-container .wave-1 {
+            width: 1200px; height: 1200px;
+            bottom: -600px;
+            left: -600px;
+            animation-delay: 0s;
+        }
+
+        .wave-container .wave-2 {
+            width: 1000px; height: 1000px;
+            top: -500px;
+            right: -500px;
+            animation-delay: 5s;
+        }
+
+        .wave-container .wave-3 {
+            width: 1400px; height: 1400px;
+            bottom: -700px;
+            right: -700px;
+            animation-delay: 10s;
+        }
+
+        @keyframes wave-move {
+            0% { transform: scale(0.5) translate(0, 0); opacity: 0.2; }
+            50% { transform: scale(1.5) translate(50px, -50px); opacity: 0.4; }
+            100% { transform: scale(0.5) translate(0, 0); opacity: 0.2; }
+        }
+
+        /* Staggered Fade-Up for Team Cards */
+        .fade-up-stagger {
+            animation: fade-up 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fade-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Text Gradient for Headline */
+        .text-gradient-green-blue {
+            background: linear-gradient(90deg, var(--green-accent), var(--blue-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Floating animation for subheading */
+        .animate-floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Pulsing animation for icons */
+        .animate-pulse-icon {
+            animation: pulse-icon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Continuous floating animation for sections */
+        .animate-floating-subtle {
+            animation: floating-subtle 6s ease-in-out infinite;
+        }
+
+        @keyframes floating-subtle {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center text-center p-8 overflow-hidden">
+        <div class="wave-container">
+            <div class="wave-1 bg-green-500"></div>
+            <div class="wave-2 bg-blue-500"></div>
+            <div class="wave-3 bg-green-500"></div>
+        </div>
+        <div class="relative z-10 flex flex-col items-center max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight leading-tight mb-4 animate-fade-in-up text-gradient-green-blue">
+                Empowering Citizens. Transforming Cities.
+            </h1>
+            <p class="text-lg md:text-xl text-slate-600 max-w-2xl animate-fade-in-up animate-delay-200 animate-floating">
+                Our platform enables every citizen to report civic issues — from potholes to streetlights — making our communities smarter, safer, and more connected.
+            </p>
+        </div>
+    </header>
+
+    <!-- About the Platform -->
+    <section id="about" class="py-24 px-8 md:px-16 lg:px-24">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div class="order-2 md:order-1 animate-fade-in">
+                <h2 class="text-3xl md:text-4xl font-semibold mb-6">About the Platform</h2>
+                <p class="text-slate-600 leading-relaxed text-lg">
+                    Our civic reporting platform leverages crowdsourcing to identify, track, and resolve everyday issues. With real-time updates and intelligent analytics, we bridge the gap between citizens and local authorities, ensuring voices are heard and action is taken. We believe technology should be a tool for collective progress.
+                </p>
+                <div class="flex flex-wrap items-center mt-8 gap-6 md:gap-8">
+                    <div class="flex flex-col items-center text-center animate-fade-in-up animate-delay-200">
+                        <span class="p-3 rounded-full bg-blue-100 text-blue-600 mb-2 animate-pulse-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                        </span>
+                        <span class="text-sm font-medium text-slate-700">Location Pin</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center animate-fade-in-up animate-delay-400">
+                        <span class="p-3 rounded-full bg-green-100 text-green-600 mb-2 animate-pulse-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6zM8 12h8v2H8zm0 4h8v2H8zm-2-2h-1c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1h1v4z"/></svg>
+                        </span>
+                        <span class="text-sm font-medium text-slate-700">Report</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center animate-fade-in-up animate-delay-600">
+                        <span class="p-3 rounded-full bg-blue-100 text-blue-600 mb-2 animate-pulse-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </span>
+                        <span class="text-sm font-medium text-slate-700">Tracking</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center animate-fade-in-up animate-delay-800">
+                        <span class="p-3 rounded-full bg-green-100 text-green-600 mb-2 animate-pulse-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.74.86 2.97 2.76 2.97 4.95V19h4v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        </span>
+                        <span class="text-sm font-medium text-slate-700">AI Insights</span>
+                    </div>
+                </div>
+            </div>
+            <div class="order-1 md:order-2 flex justify-center md:justify-end animate-fade-in-up">
+                <div id="graphic-placeholder" class="w-full max-w-lg aspect-square bg-slate-100 rounded-2xl shadow-lg flex items-center justify-center p-8">
+                    <span class="text-gray-400 text-center font-bold text-lg">Platform Graphic Placeholder</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="py-24 px-8 md:px-16 lg:px-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-semibold mb-16 animate-fade-in">Our Team</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="fade-up-stagger" style="animation-delay: 0.1s;">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-[1.07] hover:shadow-2xl p-8">
+                        <h3 class="text-xl font-medium text-slate-800">Devyansh</h3>
+                        <p class="text-blue-500 font-semibold text-sm">Full Stack Developer</p>
+                        <div class="flex justify-center gap-4 mt-4">
+                            <a href="#" class="text-slate-500 hover:text-blue-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11.336 19h-3.364v-10.938h3.364v10.938zm-1.684-12.428c-1.041 0-1.682-0.674-1.682-1.579 0-0.916 0.643-1.58 1.687-1.58 1.042 0 1.682 0.664 1.682 1.58 0 0.905-0.645 1.579-1.687 1.579zm12.336 12.428h-3.364v-6.319c0-1.536-0.612-1.895-1.396-1.895-0.784 0-1.424 0.359-1.424 1.895v6.319h-3.364v-10.938h3.364v1.44c0.449-0.627 0.975-1.127 1.956-1.127 1.769 0 3.012 1.157 3.012 3.86v6.756h-0.004z"/></svg>
+                            </a>
+                            <a href="#" class="text-slate-500 hover:text-green-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584 0.012 4.851 0.070 1.258 0.057 1.875 0.231 2.512 0.485s1.226 0.635 1.764 1.173c0.538 0.538 0.923 1.096 1.173 1.764s0.428 1.254 0.485 2.512c0.058 1.267 0.070 1.647 0.070 4.851s-0.012 3.584-0.070 4.851c-0.057 1.258-0.231 1.875-0.485 2.512s-0.635 1.226-1.173 1.764c-0.538 0.538-1.096 0.923-1.764 1.173s-1.254 0.428-2.512 0.485c1.267-0.058 1.647-0.070 4.851-0.070s-3.584-0.012-4.851-0.070c-1.258-0.057-1.875-0.231-2.512-0.485s-1.226-0.635-1.764-1.173c-0.538-0.538-0.923-1.096-1.173-1.764s-0.428-1.254-0.485-2.512c-0.058-1.267-0.070-1.647-0.070-4.851s0.012-3.584 0.070-4.851c0.057-1.258 0.231-1.875 0.485-2.512s0.635-1.226 1.173-1.764c0.538-0.538 1.096-0.923 1.764-1.173s1.254-0.428 2.512-0.485c1.267-0.058 1.647-0.069 4.781-0.069zm0 6.64c-2.42 0-4.381 1.961-4.381 4.381s1.961 4.381 4.381 4.381 4.381-1.961 4.381-4.381-1.961-4.381-4.381-4.381zm0 7.15c-1.528 0-2.769-1.241-2.769-2.769s1.241-2.769 2.769-2.769 2.769 1.241 2.769 2.769-1.241 2.769-2.769 2.769z"/></svg>
+                            </a>
+                            <a href="mailto:devyansh@ourplatform.com" class="text-slate-500 hover:text-red-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.104-0.896-2-2-2h-16c-1.104 0-2 0.896-2 2v12c0 1.104 0.896 2 2 2h16c1.104 0 2-0.896 2-2v-12zm-2 1.341l-8 5.714-8-5.714v-1.341h16v1.341zM20 18h-16c-0.552 0-1-0.448-1-1v-8.659l9 6.429 9-6.429v8.659c0 0.552-0.448 1-1 1z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-up-stagger" style="animation-delay: 0.2s;">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-[1.07] hover:shadow-2xl p-8">
+                        <h3 class="text-xl font-medium text-slate-800">Manish</h3>
+                        <p class="text-blue-500 font-semibold text-sm">Frontend Developer</p>
+                        <div class="flex justify-center gap-4 mt-4">
+                            <a href="https://linkedin.com/in/manish" class="text-slate-500 hover:text-blue-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11.336 19h-3.364v-10.938h3.364v10.938zm-1.684-12.428c-1.041 0-1.682-0.674-1.682-1.579 0-0.916 0.643-1.58 1.687-1.58 1.042 0 1.682 0.664 1.682 1.58 0 0.905-0.645 1.579-1.687 1.579zm12.336 12.428h-3.364v-6.319c0-1.536-0.612-1.895-1.396-1.895-0.784 0-1.424 0.359-1.424 1.895v6.319h-3.364v-10.938h3.364v1.44c0.449-0.627 0.975-1.127 1.956-1.127 1.769 0 3.012 1.157 3.012 3.86v6.756h-0.004z"/></svg>
+                            </a>
+                            <a href="https://instagram.com/manish" class="text-slate-500 hover:text-green-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584 0.012 4.851 0.070 1.258 0.057 1.875 0.231 2.512 0.485s1.226 0.635 1.764 1.173c0.538 0.538 0.923 1.096 1.173 1.764s0.428 1.254 0.485 2.512c0.058 1.267 0.070 1.647 0.070 4.851s-0.012 3.584-0.070 4.851c-0.057 1.258-0.231 1.875-0.485 2.512s-0.635 1.226-1.173 1.764c-0.538 0.538-1.096 0.923-1.764 1.173s-1.254 0.428-2.512 0.485c1.267-0.058 1.647-0.070 4.851-0.070s-3.584-0.012-4.851-0.070c-1.258-0.057-1.875-0.231-2.512-0.485s-1.226-0.635-1.764-1.173c-0.538-0.538-0.923-1.096-1.173-1.764s-0.428-1.254-0.485-2.512c-0.058-1.267-0.070-1.647-0.070-4.851s0.012-3.584 0.070-4.851c0.057-1.258 0.231-1.875 0.485-2.512s0.635-1.226 1.173-1.764c0.538-0.538 1.096-0.923 1.764-1.173s1.254-0.428 2.512-0.485c1.267-0.058 1.647-0.069 4.781-0.069zm0 6.64c-2.42 0-4.381 1.961-4.381 4.381s1.961 4.381 4.381 4.381 4.381-1.961 4.381-4.381-1.961-4.381-4.381-4.381zm0 7.15c-1.528 0-2.769-1.241-2.769-2.769s1.241-2.769 2.769-2.769 2.769 1.241 2.769 2.769-1.241 2.769-2.769 2.769z"/></svg>
+                            </a>
+                            <a href="mailto:manish@ourplatform.com" class="text-slate-500 hover:text-red-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.104-0.896-2-2-2h-16c-1.104 0-2 0.896-2 2v12c0 1.104 0.896 2 2 2h16c1.104 0 2-0.896 2-2v-12zm-2 1.341l-8 5.714-8-5.714v-1.341h16v1.341zM20 18h-16c-0.552 0-1-0.448-1-1v-8.659l9 6.429 9-6.429v8.659c0 0.552-0.448 1-1 1z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-up-stagger" style="animation-delay: 0.3s;">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-[1.07] hover:shadow-2xl p-8">
+                        <h3 class="text-xl font-medium text-slate-800">Yash</h3>
+                        <p class="text-blue-500 font-semibold text-sm">Frontend Developer</p>
+                        <div class="flex justify-center gap-4 mt-4">
+                            <a href="https://linkedin.com/in/yash" class="text-slate-500 hover:text-blue-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11.336 19h-3.364v-10.938h3.364v10.938zm-1.684-12.428c-1.041 0-1.682-0.674-1.682-1.579 0-0.916 0.643-1.58 1.687-1.58 1.042 0 1.682 0.664 1.682 1.58 0 0.905-0.645 1.579-1.687 1.579zm12.336 12.428h-3.364v-6.319c0-1.536-0.612-1.895-1.396-1.895-0.784 0-1.424 0.359-1.424 1.895v6.319h-3.364v-10.938h3.364v1.44c0.449-0.627 0.975-1.127 1.956-1.127 1.769 0 3.012 1.157 3.012 3.86v6.756h-0.004z"/></svg>
+                            </a>
+                            <a href="https://instagram.com/yash" class="text-slate-500 hover:text-green-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584 0.012 4.851 0.070 1.258 0.057 1.875 0.231 2.512 0.485s1.226 0.635 1.764 1.173c0.538 0.538 0.923 1.096 1.173 1.764s0.428 1.254 0.485 2.512c0.058 1.267 0.070 1.647 0.070 4.851s-0.012 3.584-0.070 4.851c-0.057 1.258-0.231 1.875-0.485 2.512s-0.635 1.226-1.173 1.764c-0.538 0.538-1.096 0.923-1.764 1.173s-1.254 0.428-2.512 0.485c1.267-0.058 1.647-0.070 4.851-0.070s-3.584-0.012-4.851-0.070c-1.258-0.057-1.875-0.231-2.512-0.485s-1.226-0.635-1.764-1.173c-0.538-0.538-0.923-1.096-1.173-1.764s-0.428-1.254-0.485-2.512c-0.058-1.267-0.070-1.647-0.070-4.851s0.012-3.584 0.070-4.851c0.057-1.258 0.231-1.875 0.485-2.512s0.635-1.226 1.173-1.764c0.538-0.538 1.096-0.923 1.764-1.173s1.254-0.428 2.512-0.485c1.267-0.058 1.647-0.069 4.781-0.069zm0 6.64c-2.42 0-4.381 1.961-4.381 4.381s1.961 4.381 4.381 4.381 4.381-1.961 4.381-4.381-1.961-4.381-4.381-4.381zm0 7.15c-1.528 0-2.769-1.241-2.769-2.769s1.241-2.769 2.769-2.769 2.769 1.241 2.769 2.769-1.241 2.769-2.769 2.769z"/></svg>
+                            </a>
+                            <a href="mailto:yash@ourplatform.com" class="text-slate-500 hover:text-red-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.104-0.896-2-2-2h-16c-1.104 0-2 0.896-2 2v12c0 1.104 0.896 2 2 2h16c1.104 0 2-0.896 2-2v-12zm-2 1.341l-8 5.714-8-5.714v-1.341h16v1.341zM20 18h-16c-0.552 0-1-0.448-1-1v-8.659l9 6.429 9-6.429v8.659c0 0.552-0.448 1-1 1z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-up-stagger" style="animation-delay: 0.4s;">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-[1.07] hover:shadow-2xl p-8">
+                        <h3 class="text-xl font-medium text-slate-800">Sakshi</h3>
+                        <p class="text-green-500 font-semibold text-sm">Backend Developer</p>
+                        <div class="flex justify-center gap-4 mt-4">
+                            <a href="https://linkedin.com/in/sakshi" class="text-slate-500 hover:text-blue-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11.336 19h-3.364v-10.938h3.364v10.938zm-1.684-12.428c-1.041 0-1.682-0.674-1.682-1.579 0-0.916 0.643-1.58 1.687-1.58 1.042 0 1.682 0.664 1.682 1.58 0 0.905-0.645 1.579-1.687 1.579zm12.336 12.428h-3.364v-6.319c0-1.536-0.612-1.895-1.396-1.895-0.784 0-1.424 0.359-1.424 1.895v6.319h-3.364v-10.938h3.364v1.44c0.449-0.627 0.975-1.127 1.956-1.127 1.769 0 3.012 1.157 3.012 3.86v6.756h-0.004z"/></svg>
+                            </a>
+                            <a href="https://instagram.com/sakshi" class="text-slate-500 hover:text-green-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584 0.012 4.851 0.070 1.258 0.057 1.875 0.231 2.512 0.485s1.226 0.635 1.764 1.173c0.538 0.538 0.923 1.096 1.173 1.764s0.428 1.254 0.485 2.512c0.058 1.267 0.070 1.647 0.070 4.851s-0.012 3.584-0.070 4.851c-0.057 1.258-0.231 1.875-0.485 2.512s-0.635 1.226-1.173 1.764c-0.538 0.538-1.096 0.923-1.764 1.173s-1.254 0.428-2.512 0.485c1.267-0.058 1.647-0.070 4.851-0.070s-3.584-0.012-4.851-0.070c-1.258-0.057-1.875-0.231-2.512-0.485s-1.226-0.635-1.764-1.173c-0.538-0.538-0.923-1.096-1.173-1.764s-0.428-1.254-0.485-2.512c-0.058-1.267-0.070-1.647-0.070-4.851s0.012-3.584 0.070-4.851c0.057-1.258 0.231-1.875 0.485-2.512s0.635-1.226 1.173-1.764c0.538-0.538 1.096-0.923 1.764-1.173s1.254-0.428 2.512-0.485c1.267-0.058 1.647-0.069 4.781-0.069zm0 6.64c-2.42 0-4.381 1.961-4.381 4.381s1.961 4.381 4.381 4.381 4.381-1.961 4.381-4.381-1.961-4.381-4.381-4.381zm0 7.15c-1.528 0-2.769-1.241-2.769-2.769s1.241-2.769 2.769-2.769 2.769 1.241 2.769 2.769-1.241 2.769-2.769 2.769z"/></svg>
+                            </a>
+                            <a href="mailto:sakshi@ourplatform.com" class="text-slate-500 hover:text-red-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.104-0.896-2-2-2h-16c-1.104 0-2 0.896-2 2v12c0 1.104 0.896 2 2 2h16c1.104 0 2-0.896 2-2v-12zm-2 1.341l-8 5.714-8-5.714v-1.341h16v1.341zM20 18h-16c-0.552 0-1-0.448-1-1v-8.659l9 6.429 9-6.429v8.659c0 0.552-0.448 1-1 1z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-up-stagger" style="animation-delay: 0.5s;">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-[1.07] hover:shadow-2xl p-8">
+                        <h3 class="text-xl font-medium text-slate-800">Janardhan</h3>
+                        <p class="text-green-500 font-semibold text-sm">Backend Developer</p>
+                        <div class="flex justify-center gap-4 mt-4">
+                            <a href="https://linkedin.com/in/janardhan" class="text-slate-500 hover:text-blue-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11.336 19h-3.364v-10.938h3.364v10.938zm-1.684-12.428c-1.041 0-1.682-0.674-1.682-1.579 0-0.916 0.643-1.58 1.687-1.58 1.042 0 1.682 0.664 1.682 1.58 0 0.905-0.645 1.579-1.687 1.579zm12.336 12.428h-3.364v-6.319c0-1.536-0.612-1.895-1.396-1.895-0.784 0-1.424 0.359-1.424 1.895v6.319h-3.364v-10.938h3.364v1.44c0.449-0.627 0.975-1.127 1.956-1.127 1.769 0 3.012 1.157 3.012 3.86v6.756h-0.004z"/></svg>
+                            </a>
+                            <a href="https://instagram.com/janardhan" class="text-slate-500 hover:text-green-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584 0.012 4.851 0.070 1.258 0.057 1.875 0.231 2.512 0.485s1.226 0.635 1.764 1.173c0.538 0.538 0.923 1.096 1.173 1.764s0.428 1.254 0.485 2.512c0.058 1.267 0.070 1.647 0.070 4.851s-0.012 3.584-0.070 4.851c-0.057 1.258-0.231 1.875-0.485 2.512s-0.635 1.226-1.173 1.764c-0.538 0.538-1.096 0.923-1.764 1.173s-1.254 0.428-2.512 0.485c1.267-0.058 1.647-0.070 4.851-0.070s-3.584-0.012-4.851-0.070c-1.258-0.057-1.875-0.231-2.512-0.485s-1.226-0.635-1.764-1.173c-0.538-0.538-0.923-1.096-1.173-1.764s1.254-0.428 2.512-0.485c1.267-0.058 1.647-0.069 4.781-0.069zm0 6.64c-2.42 0-4.381 1.961-4.381 4.381s1.961 4.381 4.381 4.381 4.381-1.961 4.381-4.381-1.961-4.381-4.381-4.381zm0 7.15c-1.528 0-2.769-1.241-2.769-2.769s1.241-2.769 2.769-2.769 2.769 1.241 2.769 2.769-1.241 2.769-2.769 2.769z"/></svg>
+                            </a>
+                            <a href="mailto:janardhan@ourplatform.com" class="text-slate-500 hover:text-red-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.104-0.896-2-2-2h-16c-1.104 0-2 0.896-2 2v12c0 1.104 0.896 2 2 2h16c1.104 0 2-0.896 2-2v-12zm-2 1.341l-8 5.714-8-5.714v-1.341h16v1.341zM20 18h-16c-0.552 0-1-0.448-1-1v-8.659l9 6.429 9-6.429v8.659c0 0.552-0.448 1-1 1z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-up-stagger" style="animation-delay: 0.6s;">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-[1.07] hover:shadow-2xl p-8">
+                        <h3 class="text-xl font-medium text-slate-800">Bhardwaj</h3>
+                        <p class="text-green-500 font-semibold text-sm">AI/ML Engineer</p>
+                        <div class="flex justify-center gap-4 mt-4">
+                            <a href="https://linkedin.com/in/bhardwaj" class="text-slate-500 hover:text-blue-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11.336 19h-3.364v-10.938h3.364v10.938zm-1.684-12.428c-1.041 0-1.682-0.674-1.682-1.579 0-0.916 0.643-1.58 1.687-1.58 1.042 0 1.682 0.664 1.682 1.58 0 0.905-0.645 1.579-1.687 1.579zm12.336 12.428h-3.364v-6.319c0-1.536-0.612-1.895-1.396-1.895-0.784 0-1.424 0.359-1.424 1.895v6.319h-3.364v-10.938h3.364v1.44c0.449-0.627 0.975-1.127 1.956-1.127 1.769 0 3.012 1.157 3.012 3.86v6.756h-0.004z"/></svg>
+                            </a>
+                            <a href="https://instagram.com/bhardwaj" class="text-slate-500 hover:text-green-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584 0.012 4.851 0.070 1.258 0.057 1.875 0.231 2.512 0.485s1.226 0.635 1.764 1.173c0.538 0.538 0.923 1.096 1.173 1.764s0.428 1.254 0.485 2.512c0.058 1.267 0.070 1.647 0.070 4.851s-0.012 3.584-0.070 4.851c-0.057 1.258-0.231 1.875-0.485 2.512s-0.635 1.226-1.173 1.764c-0.538 0.538-0.923 1.096-1.173 1.764s-1.254 0.428-2.512 0.485c1.267-0.058 1.647-0.070 4.851-0.070s-3.584-0.012-4.851-0.070c-1.258-0.057-1.875-0.231-2.512-0.485s-1.226-0.635-1.764-1.173c-0.538-0.538-0.923-1.096-1.173-1.764s-0.428-1.254-0.485-2.512c-0.058-1.267-0.070-1.647-0.070-4.851s0.012-3.584 0.070-4.851c0.057-1.258 0.231-1.875 0.485-2.512s0.635-1.226 1.173-1.764c0.538-0.538 1.096-0.923 1.764-1.173s1.254-0.428 2.512-0.485c1.267-0.058 1.647-0.069 4.781-0.069zm0 6.64c-2.42 0-4.381 1.961-4.381 4.381s1.961 4.381 4.381 4.381 4.381-1.961 4.381-4.381-1.961-4.381-4.381-4.381zm0 7.15c-1.528 0-2.769-1.241-2.769-2.769s1.241-2.769 2.769-2.769 2.769 1.241 2.769 2.769-1.241 2.769-2.769 2.769z"/></svg>
+                            </a>
+                            <a href="mailto:bhardwaj@ourplatform.com" class="text-slate-500 hover:text-red-500 transition-colors transform hover:scale-125">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.104-0.896-2-2-2h-16c-1.104 0-2 0.896-2 2v12c0 1.104 0.896 2 2 2h16c1.104 0 2-0.896 2-2v-12zm-2 1.341l-8 5.714-8-5.714v-1.341h16v1.341zM20 18h-16c-0.552 0-1-0.448-1-1v-8.659l9 6.429 9-6.429v8.659c0 0.552-0.448 1-1 1z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission & Vision -->
+    <section class="py-24 px-8 md:px-16 lg:px-24 animate-floating-subtle">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="flex flex-col items-center text-center animate-fade-in-up">
+                <span class="p-4 rounded-full bg-green-100 text-green-600 mb-6 animate-pulse-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                </span>
+                <h2 class="text-3xl font-semibold mb-4">Our Mission</h2>
+                <p class="text-slate-600 max-w-md">
+                    To empower communities with technology that drives civic engagement and accountability.
+                </p>
+            </div>
+            <div class="flex flex-col items-center text-center animate-fade-in-up animate-delay-200">
+                <span class="p-4 rounded-full bg-blue-100 text-blue-600 mb-6 animate-pulse-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                </span>
+                <h2 class="text-3xl font-semibold mb-4">Our Vision</h2>
+                <p class="text-slate-600 max-w-md">
+                    To create smarter, more responsive cities through collaboration and innovation.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-16 px-8 md:px-16 lg:px-24 bg-gray-50 text-center animate-fade-in-up">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-slate-600">
+            <div class="animate-fade-in">
+                <h4 class="font-semibold text-slate-800 mb-2">Contact Us</h4>
+                <p>Helpline: <a href="tel:+919876543210" class="hover:text-blue-500 transition-colors">+91-9876543210</a></p>
+                <p>Email: <a href="mailto:civicreporting@ourplatform.com" class="hover:text-blue-500 transition-colors">civicreporting@ourplatform.com</a></p>
+            </div>
+            <div class="animate-fade-in animate-delay-200">
+                <h4 class="font-semibold text-slate-800 mb-2">Our Address</h4>
+                <p>123 Innovation Hub</p>
+                <p>Tech City, India</p>
+            </div>
+            <div class="animate-fade-in animate-delay-400">
+                <h4 class="font-semibold text-slate-800 mb-2">Follow Us</h4>
+                <div class="flex justify-center gap-4 mt-2">
+                    <a href="#" class="text-slate-500 hover:text-green-500 transform transition-transform hover:scale-125">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c-0.895 0.395-1.856 0.659-2.856 0.776 1.028-0.617 1.815-1.597 2.181-2.767-0.962 0.572-2.025 0.985-3.149 1.207-0.908-0.967-2.197-1.572-3.64-1.572-2.768 0-5.011 2.243-5.011 5.011 0 0.392 0.044 0.772 0.128 1.139-4.166-0.209-7.85-2.207-10.32-5.232-0.43 0.741-0.675 1.608-0.675 2.529 0 1.737 0.884 3.272 2.23 4.175-0.824-0.026-1.597-0.252-2.275-0.627v0.063c0 2.428 1.726 4.455 4.018 4.921-0.42 0.115-0.865 0.177-1.328 0.177-0.325 0-0.641-0.031-0.95-0.091 0.638 1.99 2.487 3.435 4.676 3.475-1.714 1.344-3.877 2.144-6.226 2.144-0.405 0-0.803-0.024-1.192-0.071 2.21 1.419 4.825 2.247 7.625 2.247 9.155 0 14.155-7.591 14.155-14.156 0-0.216-0.005-0.43-0.013-0.645 0.974-0.706 1.817-1.592 2.483-2.603z"/></svg>
+                    </a>
+                    <a href="#" class="text-slate-500 hover:text-green-500 transform transition-transform hover:scale-125">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10v4h3v7h4v-7h3.642l0.358-4h-4v-1.642c0-0.668 0.19-1.35 1.383-1.35h2.617v-3.84c-0.54-.084-1.25-.192-2.144-0.192-2.187 0-3.666 1.125-4.482 3.292-0.358-0.04-0.725-0.06-1.096-0.06-2.128 0-3.921 1.09-4.868 2.518-0.932 1.378-0.932 3.096 0 4.474 0.947 1.428 2.74 2.518 4.868 2.518z"/></svg>
+                    </a>
+                    <a href="#" class="text-slate-500 hover:text-green-500 transform transition-transform hover:scale-125">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.2 8.5c0.66 0 1.2-0.54 1.2-1.2s-0.54-1.2-1.2-1.2-1.2 0.54-1.2 1.2 0.54 1.2 1.2 1.2zm-6.4 0c0.66 0 1.2-0.54 1.2-1.2s-0.54-1.2-1.2-1.2-1.2 0.54-1.2 1.2 0.54 1.2 1.2 1.2zM12 17.5c-2.33 0-4.32-1.42-5.18-3.5h10.35c-0.86 2.08-2.85 3.5-5.17 3.5z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <p class="text-sm text-slate-400 mt-12">&copy; 2024 Our Platform. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // JavaScript for Intersection Observer to trigger animations on scroll
+        const faders = document.querySelectorAll('.animate-fade-in, .animate-fade-in-up, .fade-up-stagger');
+        const graphic = document.getElementById('graphic-placeholder');
+
+        const appearOptions = {
+            threshold: 0.1
+        };
+
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('is-visible');
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+
+        // Parallax effect for the graphic placeholder
+        window.addEventListener('scroll', () => {
+            const scrollPosition = window.scrollY;
+            if (graphic) {
+                graphic.style.transform = `translateY(${scrollPosition * 0.1}px)`;
+            }
+        });
+    </script>
+</body>
+</html>

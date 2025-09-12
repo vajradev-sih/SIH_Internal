@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Login</title>
+  <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style type="text/tailwindcss">
+    :root {
+        --primary-50: #f0f9ff;
+        --primary-100: #e0f2fe;
+        --primary-200: #bae6fd;
+        --primary-300: #7dd3fc;
+        --primary-400: #38bdf8;
+        --primary-500: #0ea5e9;
+        --primary-600: #0284c7;
+        --primary-700: #0369a1;
+        --primary-800: #075985;
+        --primary-900: #0c4a6e;
+        --primary-950: #082f49;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+</head>
+
+<body class="bg-white antialiased">
+  <div class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white py-12">
+    <div
+      class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560972550-ABA3456b5564?q=80&amp;w=2940&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center">
+    </div>
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <div class="relative w-full max-w-lg">
+      <div class="absolute -left-20 -top-28 h-72 w-72 rounded-full bg-[#256A3E] opacity-20 blur-3xl"></div>
+      <div class="absolute -right-28 -bottom-16 h-72 w-72 rounded-full bg-violet-200 opacity-20 blur-3xl"></div>
+
+      <div class="relative rounded-xl border border-gray-200 bg-white/70 p-8 shadow-lg backdrop-blur-lg"
+        x-data="{ view: 'login' }">
+
+        <!-- close button  -->
+        <a href="index.html"
+          class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors">
+          <span class="material-symbols-outlined text-lg"> close </span>
+        </a>
+
+
+        <!-------------- login portal for old user-------- -->
+        <div x-show="view === 'login'">
+          <div class="mx-auto mb-8 flex flex-col items-center text-center">
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+              Login Portal
+            </h1>
+            <p class="mt-2 text-gray-600">Please enter your details.</p>
+          </div>
+          <div class="space-y-6">
+            <form action="#" class="space-y-6" method="POST">
+              <div>
+                <label class="block text-sm font-medium text-gray-700" for="user-email">Email or Username</label>
+                <div class="mt-1">
+                  <input id="user-email" name="email" type="text" required="" placeholder="you@example.com"
+                    autocomplete="email"
+                    class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700" for="user-password">Password</label>
+                <div class="mt-1">
+                  <input id="user-password" name="password" type="password" required="" placeholder="••••••••"
+                    autocomplete="current-password"
+                    class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+                </div>
+              </div>
+
+              <!-- sumbit button  -->
+              <div>
+                <button type="submit"
+                  class="flex w-full justify-center rounded-md border border-transparent bg-[#256A3E] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-[#256A3E] focus:ring-offset-2">
+                  Log In
+                </button>
+              </div>
+            </form>
+            <div class="text-center text-sm text-gray-600">
+              <p>
+                Don't have an account?
+                <a class="cursor-pointer font-medium text-[#256A3E] hover:text-green-800" href="#signup"
+                  @click.prevent="view = 'signup'">Sign up</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-------- creat new account -------- -->
+
+        <div id="signup" style="display: none;" x-show="view === 'signup'">
+          <div class="mx-auto mb-8 flex flex-col items-center text-center">
+            <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-[#256A3E] text-white">
+              <span class="material-symbols-outlined">person_add</span>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+              Create an Account
+            </h1>
+            <p class="mt-2 text-gray-600">
+              Fill in the details below to get started.
+            </p>
+          </div>
+          <form action="#" class="space-y-4" method="POST">
+            <div>
+              <label class="block text-sm font-medium text-gray-700" for="signup-username">Username</label>
+              <div class="mt-1">
+                <input id="signup-username" name="username" type="text" required=""
+                  placeholder="Choose a unique username"
+                  class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700" for="signup-name">Full Name</label>
+              <div class="mt-1">
+                <input id="signup-name" name="name" type="text" required="" placeholder="John Doe"
+                  class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700" for="signup-email">Email Address</label>
+              <div class="mt-1">
+                <input id="signup-email" name="email" type="email" required="" placeholder="you@example.com"
+                  autocomplete="email"
+                  class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700" for="signup-phone">Phone Number</label>
+              <div class="mt-1">
+                <input id="signup-phone" name="phone" type="tel" required="" placeholder="e.g., 1234567890"
+                  pattern="[0-9]{10}" title="Please enter a 10-digit phone number"
+                  class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700" for="signup-password">Password</label>
+              <div class="mt-1">
+                <input id="signup-password" name="password" type="password" required="" placeholder="••••••••"
+                  autocomplete="new-password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&amp;*]).{8,}"
+                  title="Must contain at least one number and one uppercase and lowercase letter, one special character, and at least 8 or more characters"
+                  class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+              </div>
+              <p class="mt-2 text-xs text-gray-500">
+                Min. 8 characters, 1 uppercase, 1 lowercase, 1 number, 1
+                special character.
+              </p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700" for="signup-password-confirm">Confirm
+                Password</label>
+              <div class="mt-1">
+                <input id="signup-password-confirm" name="password_confirmation" type="password" required=""
+                  placeholder="••••••••" autocomplete="new-password"
+                  class="form-input block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#256A3E] focus:ring-[#256A3E] sm:text-sm" />
+              </div>
+            </div>
+            <div class="pt-2">
+              <button type="submit"
+                class="flex w-full justify-center rounded-md border border-transparent bg-[#256A3E] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-[#256A3E] focus:ring-offset-2">
+                Sign Up
+              </button>
+            </div>
+          </form>
+          <div class="mt-6 text-center text-sm text-gray-600">
+            <p>
+              Already have an account?
+              <a class="cursor-pointer font-medium text-[#256A3E] hover:text-green-800" href="#"
+                @click.prevent="view = 'login'">Log in</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script defer="" src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"></script>
+</body>
+
+</html>

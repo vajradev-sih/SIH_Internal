@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nearby Hospitals</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f9fbfa;
+      color: #222;
+    }
+
+    /* Top Info Bar */
+    .topbar {
+      background: #c62828;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 20px;
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+    .topbar a {
+      color: #ffebee;
+      text-decoration: none;
+      margin-left: 8px;
+      font-weight: 500;
+    }
+    .topbar a:hover { text-decoration: underline; }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(90deg, #c62828, #2e7d32);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .hero p {
+      font-size: 16px;
+      margin-top: 10px;
+      color: #ffebee;
+      font-weight: 500;
+    }
+
+    /* Search Box */
+    .search-bar {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .search-bar input {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 2px solid #c62828;
+      width: 220px;
+      font-size: 14px;
+    }
+    .search-bar button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      background: #c62828;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+    .search-bar button:hover { background: #b71c1c; }
+
+    /* Map Section */
+    #map {
+      height: 400px;
+      width: 90%;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* Hospitals Section */
+    .stations-container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .stations-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #c62828;
+      margin-bottom: 20px;
+    }
+    .stations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .station-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      border: 2px solid #2e7d32;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      animation: fadeInUp 0.5s ease;
+    }
+    .station-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .station-card h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #2e7d32;
+    }
+    .station-card .distance {
+      font-size: 13px;
+      margin: 5px 0;
+      color: #444;
+    }
+    .station-card a {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+      margin-right: 8px;
+    }
+    .station-card a:hover { text-decoration: underline; }
+
+    /* Directions link */
+    .station-card .directions {
+      color: #2e7d32; /* green */
+    }
+
+    /* Call ambulance link */
+    .station-card .call-btn {
+      color: #c62828; /* red */
+      background: none;
+      padding: 0;
+      border: none;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .station-card .call-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Info Bar -->
+  <div class="topbar">
+    <div>Help & Support: <a href="mailto:support@hospitalhelp.com">support@hospitalhelp.com</a></div>
+    <div>🚑 Ambulance: <a href="tel:102">102</a></div>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="hero">
+    <h1>Nearby Hospitals - Your Health, Our Priority</h1>
+    <p>Find Emergency Care | Quick Response | Trusted Facilities</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <input id="searchInput" type="text" placeholder="Enter city or area">
+    <button onclick="searchLocation()">Search</button>
+  </div>
+
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Hospitals Section -->
+  <div class="stations-container">
+    <div class="stations-title">Nearby Hospitals</div>
+    <div id="stations" class="stations-grid">
+      <p style="grid-column: 1/-1; text-align:center;">Fetching hospitals...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map');
+    let userLat = null, userLon = null;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const hospitalIcon = L.icon({
+      iconUrl: "https://img.icons8.com/color/48/000000/hospital-3.png",
+      iconSize: [32,32],
+      iconAnchor: [16,32],
+      popupAnchor: [0,-32]
+    });
+    const userIcon = L.icon({
+      iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+      iconSize: [32,32],
+      iconAnchor: [16,32],
+      popupAnchor: [0,-32]
+    });
+
+    // Distance function
+    function getDistance(lat1, lon1, lat2, lon2){
+      const R = 6371;
+      const dLat = (lat2-lat1)*Math.PI/180;
+      const dLon = (lon2-lon1)*Math.PI/180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+      const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return (R*c).toFixed(2);
+    }
+
+    async function fetchHospitals(lat, lon){
+      const query = `
+        [out:json];
+        (
+          node["amenity"="hospital"](around:3000, ${lat}, ${lon});
+          way["amenity"="hospital"](around:3000, ${lat}, ${lon});
+          relation["amenity"="hospital"](around:3000, ${lat}, ${lon});
+        );
+        out center;
+      `;
+      const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const stationList = document.getElementById("stations");
+      stationList.innerHTML = "";
+
+      if(!data.elements.length){
+        stationList.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No hospitals found nearby.</p>";
+        return;
+      }
+
+      // Process hospitals
+      let hospitals = data.elements.map(el=>{
+        const sLat = el.lat || (el.center && el.center.lat);
+        const sLon = el.lon || (el.center && el.center.lon);
+        const name = el.tags?.name || "Unnamed Hospital";
+        const phone = el.tags?.phone || "102";
+        if(sLat && sLon){
+          const distance = parseFloat(getDistance(userLat,userLon,sLat,sLon));
+          return {sLat,sLon,name,phone,distance};
+        }
+      }).filter(Boolean);
+
+      hospitals.sort((a,b)=>a.distance-b.distance);
+
+      hospitals.forEach(hospital=>{
+        L.marker([hospital.sLat,hospital.sLon],{icon:hospitalIcon})
+          .addTo(map)
+          .bindPopup(`🏥 <b>${hospital.name}</b><br>📏 ${hospital.distance} km`);
+
+        const card = document.createElement("div");
+        card.className = "station-card";
+        card.innerHTML = `
+          <h3>🏥 ${hospital.name}</h3>
+          <div class="distance">📏 Distance: ${hospital.distance} km</div>
+          <a class="directions" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${hospital.sLat},${hospital.sLon}">📍 Directions</a>
+          <a class="call-btn" href="tel:${hospital.phone}">📞 Call Ambulance</a>
+        `;
+        stationList.appendChild(card);
+      });
+    }
+
+    // Geolocation
+    function initMapAndFetch(){
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition((pos)=>{
+          userLat = pos.coords.latitude;
+          userLon = pos.coords.longitude;
+          map.setView([userLat,userLon],14);
+          L.marker([userLat,userLon], {icon:userIcon})
+            .addTo(map)
+            .bindPopup("📍 You are here")
+            .openPopup();
+          fetchHospitals(userLat,userLon);
+        }, ()=>{
+          map.setView([20.5937,78.9629],5);
+          alert("Geolocation denied. Showing India map.");
+        });
+      } else {
+        map.setView([20.5937,78.9629],5);
+        alert("Geolocation not supported.");
+      }
+    }
+
+    // Search
+    function searchLocation(){
+      const input = document.getElementById("searchInput").value;
+      if(!input) return;
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(input)}`)
+        .then(res=>res.json())
+        .then(data=>{
+          if(data.length){
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            userLat = lat; userLon = lon;
+            map.setView([lat,lon],14);
+            fetchHospitals(lat,lon);
+          } else {
+            alert("Location not found");
+          }
+        })
+    }
+
+    initMapAndFetch();
+  </script>
+</body>
+</html>

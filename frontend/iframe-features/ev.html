@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nearby EV Charging Stations</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f8f9fa;
+      color: #222;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(90deg, #2e7d32, #1b5e20);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .hero p {
+      font-size: 16px;
+      margin-top: 10px;
+      color: #b9f6ca;
+      font-weight: 500;
+    }
+
+    /* Layout for map and stations side by side */
+    .map-stations-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 95px;
+      max-width: 90%;
+      margin: 30px auto;
+    }
+
+    .map-container {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .stations-wrapper {
+      flex: 1;
+      min-width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+
+    /* Map Section */
+    #map {
+      height: 400px;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Stations Section */
+    .stations-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+
+    .stations-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .station-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      border: 2px solid #2e7d32;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      transition: 0.3s;
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .station-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .station-card h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #1b5e20;
+    }
+
+    .station-card .details {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .station-card a {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 14px;
+      color: #2e7d32;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .station-card a:hover {
+      text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .map-stations-layout {
+        flex-direction: column;
+      }
+
+      .stations-wrapper {
+        max-height: none;
+      }
+
+      #map {
+        height: 300px;
+        /* Smaller map on mobile */
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Hero Banner -->
+  <div class="hero">
+    <h1>EV Charging Stations</h1>
+    <p>Find Nearby Charging Points | Go Green | Stay Charged</p>
+  </div>
+
+  <!-- Map and Stations Side by Side -->
+  <div class="map-stations-layout">
+    <div class="map-container">
+      <!-- Map -->
+      <div id="map"></div>
+    </div>
+    <div class="stations-wrapper">
+      <!-- Stations Section -->
+      <div class="stations-title">Nearby EV Charging Stations</div>
+      <div id="stations" class="stations-grid">
+        <p style="text-align:center;">Fetching charging stations...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize map
+    const map = L.map('map').setView([28.6139, 77.2090], 13); // Default: Delhi
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Custom icons
+    const chargingIcon = L.icon({
+      iconUrl: "https://img.icons8.com/color/48/000000/electric-vehicle.png",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    const userIcon = L.icon({
+      iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    // Function to add station card to the list
+    function addStationCard(name, operator, socket, lat, lon) {
+      const card = document.createElement("div");
+      card.className = "station-card";
+
+      const heading = document.createElement("h3");
+      heading.textContent = "⚡ " + name;
+      card.appendChild(heading);
+
+      const details = document.createElement("div");
+      details.className = "details";
+
+      const operatorDiv = document.createElement("div");
+      operatorDiv.textContent = "Operator: " + operator;
+      details.appendChild(operatorDiv);
+
+      const socketDiv = document.createElement("div");
+      socketDiv.textContent = "Connectors: " + socket;
+      details.appendChild(socketDiv);
+
+      card.appendChild(details);
+
+      const link = document.createElement("a");
+      link.href = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lon;
+      link.target = "_blank";
+      link.textContent = "📍 Get Directions";
+      card.appendChild(link);
+
+      document.getElementById("stations").appendChild(card);
+    }
+
+    // Function to show demo stations when no real data is found
+    function showDemoStations(lat, lon) {
+      const demoStations = [
+        {
+          name: "Green Charge Station",
+          lat: lat + 0.01,
+          lon: lon + 0.01,
+          operator: "GreenEnergy",
+          socket: "Type 2, CCS"
+        },
+        {
+          name: "Electric City Charger",
+          lat: lat - 0.008,
+          lon: lon + 0.005,
+          operator: "ElectroMobility",
+          socket: "Type 2, CHAdeMO"
+        },
+        {
+          name: "PowerUp EV Station",
+          lat: lat + 0.005,
+          lon: lon - 0.01,
+          operator: "PowerGrid",
+          socket: "CCS, Type 1"
+        }
+      ];
+
+      demoStations.forEach(function (station) {
+        // Add demo markers
+        const marker = L.marker([station.lat, station.lon], { icon: chargingIcon })
+          .addTo(map);
+
+        const popupContent = "<b>" + station.name + "</b><br>Operator: " +
+          station.operator + "<br>Connectors: " + station.socket;
+        marker.bindPopup(popupContent);
+
+        // Add demo cards
+        addStationCard(station.name, station.operator, station.socket, station.lat, station.lon);
+      });
+    }
+
+    async function fetchChargingStations(lat, lon) {
+      try {
+        // Define the query to find charging stations
+        const query = "[out:json];" +
+          "(" +
+          "node[\"amenity\"=\"charging_station\"](around:10000, " + lat + ", " + lon + ");" +
+          "way[\"amenity\"=\"charging_station\"](around:10000, " + lat + ", " + lon + ");" +
+          "relation[\"amenity\"=\"charging_station\"](around:10000, " + lat + ", " + lon + ");" +
+          ");" +
+          "out center;";
+
+        // Create URL for the Overpass API request
+        const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
+
+        // Fetch data from Overpass API
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Get the container element and clear it
+        const stationList = document.getElementById("stations");
+        stationList.innerHTML = "";
+
+        // If no data found, show sample data instead
+        if (!data.elements || data.elements.length === 0) {
+          const noDataMsg = document.createElement("p");
+          noDataMsg.style.textAlign = "center";
+          noDataMsg.textContent = "No charging stations found nearby. Showing sample stations.";
+          stationList.appendChild(noDataMsg);
+
+          showDemoStations(lat, lon);
+          return;
+        }
+
+        // Process actual data if available
+        data.elements.forEach(function (el) {
+          const sLat = el.lat || (el.center && el.center.lat);
+          const sLon = el.lon || (el.center && el.center.lon);
+          const name = el.tags && el.tags.name ? el.tags.name : "Unnamed Charging Station";
+          const operator = el.tags && el.tags.operator ? el.tags.operator : "Unknown operator";
+          const socket = el.tags && (el.tags.socket || el.tags["charging:station"])
+            ? (el.tags.socket || el.tags["charging:station"])
+            : "Standard socket";
+
+          if (sLat && sLon) {
+            // Add marker to map
+            const marker = L.marker([sLat, sLon], { icon: chargingIcon })
+              .addTo(map);
+
+            const popupContent = "<b>" + name + "</b><br>Operator: " +
+              operator + "<br>Connectors: " + socket;
+            marker.bindPopup(popupContent);
+
+            // Add card to list
+            addStationCard(name, operator, socket, sLat, sLon);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching charging station data:", error);
+        const stationList = document.getElementById("stations");
+        stationList.innerHTML = "";
+
+        const errorMsg = document.createElement("p");
+        errorMsg.style.textAlign = "center";
+        errorMsg.textContent = "Error loading charging station data. Showing sample stations.";
+        stationList.appendChild(errorMsg);
+
+        showDemoStations(lat, lon);
+      }
+    }
+
+    // Get user's location and show nearby charging stations
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        // Success callback
+        function (position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          // Center map on user's location
+          map.setView([lat, lon], 14);
+
+          // Add user marker
+          const userMarker = L.marker([lat, lon], { icon: userIcon })
+            .addTo(map);
+          userMarker.bindPopup("📍 You are here").openPopup();
+
+          // Fetch charging stations near user's location
+          fetchChargingStations(lat, lon);
+        },
+        // Error callback
+        function (error) {
+          console.error("Error getting location:", error);
+          // Use default location (Delhi) if user location is unavailable
+          fetchChargingStations(28.6139, 77.2090);
+        }
+      );
+    } else {
+      // Geolocation not supported by browser
+      console.warn("Geolocation is not supported by this browser");
+      fetchChargingStations(28.6139, 77.2090); // Use default location
+    }
+  </script>
+</body>
+
+</html>
