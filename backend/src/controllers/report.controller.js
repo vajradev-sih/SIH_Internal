@@ -12,6 +12,9 @@ const submitReport = asyncHandler(async (req, res) => {
     const { title, description, categoryId, locationLat, locationLng } = req.body;
     const { userId } = req.user;
 
+    console.log(req.body);
+    
+
     // 1. Validate required fields
     if (!title || !description || !categoryId || !locationLat || !locationLng) {
         throw new ApiError(400, 'All required fields (title, description, categoryId, locationLat, locationLng) are needed for the report.');
