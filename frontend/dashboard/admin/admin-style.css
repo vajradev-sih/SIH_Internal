@@ -209,6 +209,10 @@ header {
 .date {
     color: var(--gray-color);
     font-size: 14px;
+    background-color: white;
+    padding: 5px 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 
 /* Stats Cards */
@@ -339,7 +343,8 @@ header {
     gap: 10px;
 }
 
-.filter-controls select, .filter-controls button {
+.filter-controls select,
+.filter-controls button {
     padding: 8px 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -347,7 +352,8 @@ header {
     cursor: pointer;
 }
 
-.filter-button, .priority-filter {
+.filter-button,
+.priority-filter {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -364,7 +370,8 @@ header {
     min-width: 800px;
 }
 
-.issues-table th, .issues-table td {
+.issues-table th,
+.issues-table td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #eee;
@@ -606,11 +613,18 @@ header {
     gap: 20px;
 }
 
-.issue-images, .issue-details, .issue-map, .issue-management, .issue-comments {
+.issue-images,
+.issue-details,
+.issue-map,
+.issue-management,
+.issue-comments {
     grid-column: span 1;
 }
 
-.issue-images h3, .issue-map h3, .issue-management h3, .issue-comments h3 {
+.issue-images h3,
+.issue-map h3,
+.issue-management h3,
+.issue-comments h3 {
     font-size: 16px;
     margin-bottom: 10px;
     color: var(--dark-color);
@@ -768,7 +782,8 @@ header {
     border-top: 1px solid #eee;
 }
 
-.primary-btn, .secondary-btn {
+.primary-btn,
+.secondary-btn {
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
@@ -798,11 +813,11 @@ header {
     .stats-cards {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .analytics-section {
         grid-template-columns: 1fr;
     }
-    
+
     .main-content {
         padding: 15px;
     }
@@ -812,11 +827,11 @@ header {
     .issue-detail-content {
         grid-template-columns: 1fr;
     }
-    
+
     .analytics-section {
         gap: 15px;
     }
-    
+
     .chart-container {
         padding: 15px;
     }
@@ -826,30 +841,31 @@ header {
     .stats-cards {
         grid-template-columns: 1fr;
     }
-    
+
     .sidebar {
         width: 70px;
     }
-    
-    .logo-container h2, .nav-item span {
+
+    .logo-container h2,
+    .nav-item span {
         display: none;
     }
-    
+
     .main-content {
         margin-left: 70px;
         padding: 10px;
         max-width: calc(100vw - 70px);
     }
-    
+
     .filter-controls {
         flex-wrap: wrap;
     }
-    
+
     .analytics-section {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-    
+
     .issues-table {
         min-width: 600px;
     }
