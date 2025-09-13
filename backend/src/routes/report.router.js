@@ -1,23 +1,24 @@
-import express from 'express';
+import { Router } from 'express';
 import { submitReport, getMyReports, getReportById, getAllReports } from '../controllers/report.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { uploadMiddleware } from '../middlewares/upload.middleware.js';
+import { uploadFiles, handleMulterError } from '../middlewares/upload.middleware.js';
 
-const router = express.Router();
+const router = Router();
 
-// Public route to get a single report (can be shown to public)
-router.get('/:reportId', getReportById);
-
-// All routes below are protected
+// Protected routes - require authentication
 router.use(authMiddleware);
 
-// Submit a new report with file uploads
-router.post('/submit', uploadMiddleware, submitReport);
+// Submit new report
+router.route('/submit').post(uploadFiles, handleMulterError, submitReport);
 
-// Get all reports for the logged-in user
-router.get('/my-reports', getMyReports);
+// Get user's reports
+router.route('/my-reports').get(getMyReports);
 
-// Get all reports (for admin dashboard)
-router.get('/all', getAllReports);
+// Get specific report by ID
+router.route('/:reportId').get(getReportById);
+
+// Get all reports - Public route
+router.route('/all').get(getAllReports);
 
 export default router;
+

@@ -16,12 +16,12 @@ const reportHistorySchema = new Schema(
         previousStatus: {
             type: String,
             enum: ['pending', 'in_progress', 'resolved', 'rejected'],
-            required: true,
+            required: false,
             lowercase: true
         },
         newStatus: {
             type: String,
-            enum: ['pending', 'in_progress', 'resolved', 'rejected'],
+            enum: ['pending','in_progress', 'resolved', 'rejected'],
             required: true,
             lowercase: true
         },

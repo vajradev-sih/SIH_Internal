@@ -1,6 +1,6 @@
-// backend/src/routes/user.routes.js (updated excerpt)
+// backend/src/routes/user.routes.js
 
-import express from 'express';
+import { Router } from "express";
 import {
     registerUser,
     loginUser,
@@ -8,27 +8,23 @@ import {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
-    forgotPassword, // New import
-    resetPassword   // New import
+    forgotPassword,
+    resetPassword
 } from "../controllers/user.controller.js";
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 
-const router = express.Router();
+const router = Router();
 
-// Public routes for user authentication
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+// Public routes (no authentication required)
+router.route("/register").post(registerUser);
+router.route("/login").post(loginUser);
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password/:token").post(resetPassword);
 
-// New public routes for password reset
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password/:token', resetPassword);
-
-// Protected routes (require a valid token)
-router.post('/logout', authMiddleware, logoutUser);
-router.post('/change-password', authMiddleware, changeCurrentPassword);
-router.get('/current-user', authMiddleware, getCurrentUser);
-
-// Refresh token route (does not need authMiddleware as it works on the refresh token)
-router.post('/refresh-token', refreshAccessToken);
+// Protected routes (authentication required)
+router.route("/logout").post(authMiddleware, logoutUser);
+router.route("/refresh-token").post(refreshAccessToken);
+router.route("/change-password").post(authMiddleware, changeCurrentPassword);
+router.route("/current-user").get(authMiddleware, getCurrentUser);
 
 export default router;

@@ -1,17 +1,40 @@
 import express from 'express';
-import { updateReportStatus, assignReport, isAdmin } from '../controllers/admin.controller.js';
+import {
+    getDashboardStats,
+    getAllUsers,
+    updateUserRole,
+    deleteUser,
+    updateReportStatus,
+    assignReport,
+    resolveReport,
+    isAdmin
+} from '../controllers/admin.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { isDepartmentAdmin } from '../middlewares/departmentAdmin.middleware.js';
+import { uploadMiddleware } from '../middlewares/upload.middleware.js';
 
 const router = express.Router();
 
-// All routes below require a valid access token and an admin role
-router.use(authMiddleware, isAdmin);
+// Protected routes - require authentication
+router.use(authMiddleware);
 
-// Update a report's status - now also requires department admin access
-router.put('/reports/:reportId/status', isDepartmentAdmin, updateReportStatus);
+// Admin dashboard stats
+router.route('/dashboard-stats').get(getDashboardStats);
+
+// User management
+router.route('/users').get(getAllUsers);
+router.route('/users/:userId/role').put(updateUserRole);
+router.route('/users/:userId').delete(deleteUser);
+
+// All routes below require a valid access token and an admin role
+router.use(isAdmin);
+
+// Update a report's status
+router.put('/reports/:reportId/status', updateReportStatus);
 
 // Assign a report to an official
 router.post('/reports/:reportId/assign', assignReport);
+
+// New endpoint to mark a report as solved with a photo
+router.post('/reports/:reportId/resolve', uploadMiddleware.single('photo'), resolveReport);
 
 export default router;

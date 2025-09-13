@@ -12,6 +12,67 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
+    
+    <!-- Include API client script -->
+    <script src="../../js/api-client.js"></script>
+    
+    <!-- Auth protection script -->
+    <script>
+        // Check if user is authenticated
+        function isAuthenticated() {
+            return localStorage.getItem('token') !== null;
+        }
+        
+        // Logout function
+        function logout() {
+            // Clear authentication data
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            // Redirect to home page
+            window.location.href = '../../index.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // If not authenticated, redirect to login
+            if (!isAuthenticated()) {
+                window.location.href = '../../login.html';
+                return;
+            }
+            
+            // Get user data
+            try {
+                const userJson = localStorage.getItem('user');
+                let user = {};
+                
+                if (userJson && userJson !== 'undefined') {
+                    user = JSON.parse(userJson);
+                }
+                
+                // If user is admin, redirect to admin dashboard
+                if (user.role === 'admin' || user.role === 'super_admin' || user.role === 'department_admin') {
+                    window.location.href = '../admin/admin-dashboard.html';
+                    return;
+                }
+                
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                // Clear corrupted data and redirect to login
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                window.location.href = '../../login.html';
+            }
+            
+            // Set up logout button in the sidebar
+            const logoutLink = document.querySelector('.sidebar-nav a.logout');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -29,7 +90,7 @@
                         <a href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
                     </li>
                     <li>
-                        <a href="#"><i class="bi bi-plus-circle"></i> New Complaint</a>
+                        <a href="new-complaint.html"><i class="bi bi-plus-circle"></i> New Complaint</a>
                     </li>
                     <li>
                         <a href="#"><i class="bi bi-list-check"></i> My Complaints</a>
@@ -84,7 +145,7 @@
             <!-- Dashboard Welcome Section -->
             <section class="welcome-section">
                 <div class="welcome-text">
-                    <h1>Welcome back, Rahul!</h1>
+                    <h1>Welcome back!</h1>
                     <p>Here's what's happening with your civic complaints</p>
                 </div>
                 <div class="date-time">
@@ -452,6 +513,78 @@
             emergencyButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 emergencyOverlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeEmergency.addEventListener('click', function() {
+                emergencyOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close overlay when clicking outside the container
+            emergencyOverlay.addEventListener('click', function(e) {
+                if (e.target === emergencyOverlay) {
+                    emergencyOverlay.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Escape key to close overlay
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && emergencyOverlay.style.display === 'flex') {
+                    emergencyOverlay.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Handle logout buttons
+            document.querySelectorAll('.logout').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
+                        <h3>Emergency Helpline</h3>
+                        <p class="phone-number">112</p>
+                    </div>
+                    <div class="call-icon">
+                        <i class="bi bi-telephone-fill"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current date display
+        document.addEventListener('DOMContentLoaded', function() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('current-date').textContent = today.toLocaleDateString('en-IN', options);
+            
+            // Mobile menu toggle
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.classList.add('sidebar-toggle');
+            sidebarToggle.innerHTML = '<i class="bi bi-list"></i>';
+            document.querySelector('.dashboard-header').prepend(sidebarToggle);
+            
+            sidebarToggle.addEventListener('click', function() {
+                document.querySelector('.dashboard-container').classList.toggle('sidebar-open');
+            });
+            
+            // Emergency contacts overlay functionality
+            const emergencyOverlay = document.getElementById('emergency-overlay');
+            const emergencyButton = document.querySelector('.action-card:nth-child(4)');
+            const closeEmergency = document.getElementById('close-emergency');
+            
+            emergencyButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                emergencyOverlay.style.display = 'flex';
                 document.body.style.overflow = 'hidden'; // Prevent scrolling behind overlay
             });
             
@@ -474,6 +607,14 @@
                     emergencyOverlay.style.display = 'none';
                     document.body.style.overflow = 'auto';
                 }
+            });
+            
+            // Also handle logout for any other logout buttons
+            document.querySelectorAll('.logout').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
             });
         });
     </script>

@@ -5,14 +5,14 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import crypto from 'crypto';
-import sendEmail from '../utils/sendEmail.js'; // Import the new email utility
+import sendEmail from '../utils/sendEmail.js';
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
 
 // Helper function to generate tokens
 const generateAccessAndRefreshTokens = async(userId) => {
     try {
-        const user = await User.findOne({ userId: userId });
+        const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
 
@@ -25,12 +25,10 @@ const generateAccessAndRefreshTokens = async(userId) => {
         throw new ApiError(500, "Something went wrong while generating access and refresh token");
     }
 };
-// backend/src/controllers/user.controller.js (updated registerUser function)
 
 const registerUser = asyncHandler(async (req, res) => {
-    console.log("Received data from Postman:", req.body); 
+    console.log("Received data from frontend:", req.body); 
     const { username, name, email, password, phoneNumber } = req.body;
-    // The role is no longer taken from the request body
 
     if (!username || !name || !email || !password || !phoneNumber) {
         throw new ApiError(400, 'All required fields are needed for registration.');
@@ -47,13 +45,12 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Hardcode the role to 'citizen' for all new registrations
     const newUser = await User.create({
         username,
         name,
         email,
-        passwordHash: hashedPassword,
-        role: 'citizen', // Hardcoded role
+        passwordHash: hashedPassword, // Changed to match your schema
+        role: 'citizen',
         phoneNumber
     });
 
@@ -67,35 +64,82 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, password, username } = req.body;
+    const { email, password } = req.body;
 
-    if (!email && !username) {
-        throw new ApiError(400, "Username or email is required");
+    if (!email || !password) {
+        throw new ApiError(400, 'Email and password are required');
     }
 
-    const user = await User.findOne({ $or: [{ email }, { username }] });
+    // Select passwordHash field explicitly
+    const user = await User.findOne({ email }).select('+passwordHash');
     if (!user) {
         throw new ApiError(404, "User not found");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isPasswordValid) {
-        throw new ApiError(401, "Invalid password");
+    console.log('User found:', {
+        id: user._id,
+        email: user.email,
+        hasPassword: !!user.passwordHash,
+        passwordType: typeof user.passwordHash,
+        passwordValue: user.passwordHash ? 'exists' : 'missing/null'
+    });
+
+    // Check if user has a valid passwordHash field
+    if (!user.passwordHash || user.passwordHash === '' || user.passwordHash === null || user.passwordHash === undefined) {
+        console.error('User found but passwordHash field is invalid:', {
+            userId: user._id,
+            email: user.email,
+            passwordHashField: user.passwordHash,
+            passwordType: typeof user.passwordHash
+        });
+        throw new ApiError(500, 'User account has no valid password. Please contact support or reset your password.');
     }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user.userId);
+    console.log('Comparing password for user:', user.email);
+
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    // Convert legacy 'user' role to 'citizen' without saving to avoid validation error
+    let userRole = user.role;
+    if (user.role === 'user') {
+        userRole = 'citizen';
+        // Update the role in database using direct update to bypass validation
+        await User.updateOne(
+            { _id: user._id }, 
+            { $set: { role: 'citizen' } }
+        );
+        user.role = 'citizen'; // Update in memory for token generation
+    }
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    // Save refresh token separately to avoid validation issues
+    await User.updateOne(
+        { _id: user._id }, 
+        { $set: { refreshToken: refreshToken } }
+    );
+
+    // Remove sensitive data before sending response
+    const userResponse = user.toObject();
+    userResponse.role = userRole; // Ensure response shows the updated role
+    delete userResponse.passwordHash;
+    delete userResponse.refreshToken;
 
     const options = { httpOnly: true, secure: true };
     return res
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(200, { user, accessToken, refreshToken }, "User logged in successfully"));
+        .json(new ApiResponse(200, { user: userResponse, accessToken, refreshToken }, "User logged in successfully"));
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-    await User.findOneAndUpdate(
-        { userId: req.user.userId },
+    await User.findByIdAndUpdate(
+        req.user._id,
         { $set: { refreshToken: undefined } },
         { new: true }
     );
@@ -116,7 +160,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
     const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const user = await User.findOne({ userId: decodedToken.userId });
+    const user = await User.findById(decodedToken._id);
 
     if (!user) {
         throw new ApiError(401, "Invalid refresh token");
@@ -126,7 +170,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Refresh token is expired or used");
     }
 
-    const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user.userId);
+    const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
 
     const options = { httpOnly: true, secure: true };
     return res
@@ -154,13 +198,13 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await User.findOneAndUpdate({ userId: user.userId }, { passwordHash: hashedPassword });
+    await User.findByIdAndUpdate(user._id, { passwordHash: hashedPassword });
 
     return res.status(200).json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-    const user = await User.findOne({ userId: req.user.userId });
+    const user = await User.findById(req.user._id);
     if (!user) {
         throw new ApiError(404, "User not found");
     }
@@ -168,7 +212,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, user, "Current user fetched successfully"));
 });
 
-// New controller function to handle forgot password requests
 const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
@@ -193,6 +236,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
             subject: 'Password Reset Request',
             message
         });
+
         res.status(200).json(
             new ApiResponse(200, {}, `Password reset link sent to ${email}.`)
         );
@@ -200,12 +244,10 @@ const forgotPassword = asyncHandler(async (req, res) => {
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
         await user.save({ validateBeforeSave: false });
-        throw error; // Re-throw the ApiError from the sendEmail utility
+        throw error;
     }
 });
 
-
-// New controller function to handle password reset
 const resetPassword = asyncHandler(async (req, res) => {
     const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
@@ -223,7 +265,6 @@ const resetPassword = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'New password does not meet complexity requirements.');
     }
 
-    // Update user's password and clear the reset token
     user.passwordHash = await bcrypt.hash(newPassword, 10);
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
