@@ -3,6 +3,7 @@ import { updateReportStatus, assignReport, resolveReport } from '../controllers/
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { isDepartmentAdmin } from '../middlewares/departmentAdmin.middleware.js';
 import { uploadMiddleware } from '../middlewares/upload.middleware.js';
+import { isAdmin } from '../controllers/admin.controller.js';
 
 const router = express.Router();
 
