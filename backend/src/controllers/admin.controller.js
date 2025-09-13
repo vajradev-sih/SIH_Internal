@@ -83,6 +83,7 @@ const assignReport = asyncHandler(async (req, res) => {
         departmentId,
         assigned_to_userId: assignedToUserId,
         assignedByUserId: userId,
+        assignedByUserId: userId,
         status: 'assigned',
         remarks: `Report assigned to official.`
     });
@@ -93,6 +94,8 @@ const assignReport = asyncHandler(async (req, res) => {
 
     await ReportHistory.create({
         reportId,
+        previousStatus: report.status,
+        newStatus: 'in_progress',
         previousStatus: report.status,
         newStatus: 'in_progress',
         changedByUserId: userId,
