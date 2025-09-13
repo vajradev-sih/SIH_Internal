@@ -6,10 +6,10 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { isAdmin } from '../middlewares/admin.middleware.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 // Update a report's status
 const updateReportStatus = asyncHandler(async (req, res) => {
-    // This function will be protected by isAdmin and isDepartmentAdmin middleware
     const { reportId } = req.params;
     const { newStatus, remarks } = req.body;
     const { userId } = req.user;
@@ -25,7 +25,6 @@ const updateReportStatus = asyncHandler(async (req, res) => {
 
     const previousStatus = report.status;
     
-    // Check if the status is actually changing
     if (previousStatus === newStatus) {
         throw new ApiError(400, "The report status is already " + newStatus);
     }
@@ -33,7 +32,6 @@ const updateReportStatus = asyncHandler(async (req, res) => {
     report.status = newStatus;
     await report.save();
 
-    // Create an audit log in ReportHistory
     await ReportHistory.create({
         reportId: report.reportId,
         previousStatus: previousStatus,
@@ -42,7 +40,6 @@ const updateReportStatus = asyncHandler(async (req, res) => {
         remarks: remarks || `Status changed from ${previousStatus} to ${newStatus}.`
     });
 
-    // Create a notification for the citizen who submitted the report
     await Notification.create({
         userId: report.userId,
         reportId: report.reportId,
@@ -56,7 +53,6 @@ const updateReportStatus = asyncHandler(async (req, res) => {
 
 // Assign a report to an official
 const assignReport = asyncHandler(async (req, res) => {
-    // This function will be protected by isAdmin middleware
     const { reportId } = req.params;
     const { departmentId, assignedToUserId } = req.body;
     const { userId } = req.user;
@@ -65,18 +61,16 @@ const assignReport = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Department ID and assigned user ID are required.");
     }
 
-    // Fetch the report to get its current status for the history log
     const report = await Report.findOne({ reportId });
     if (!report) {
         throw new ApiError(404, "Report not found.");
     }
 
-    // Create a new assignment document
     const newAssignment = await ReportAssignment.create({
         reportId,
         departmentId,
         assigned_to_userId: assignedToUserId,
-        assignedByUserId: userId, // Tracks who made the assignment
+        assignedByUserId: userId,
         status: 'assigned',
         remarks: `Report assigned to official.`
     });
@@ -85,16 +79,14 @@ const assignReport = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to assign report.");
     }
     
-    // Create a history entry for the assignment
     await ReportHistory.create({
         reportId,
-        previousStatus: report.status, // Use the report's current status
-        newStatus: 'assigned',
+        previousStatus: report.status,
+        newStatus: 'in_progress',
         changedByUserId: userId,
         remarks: `Report assigned to a department official.`
     });
 
-    // Create a notification for the assigned user
     await Notification.create({
         userId: assignedToUserId,
         reportId: report.reportId,
@@ -106,8 +98,56 @@ const assignReport = asyncHandler(async (req, res) => {
     );
 });
 
+// New controller function to mark a report as solved and upload a completion photo
+const resolveReport = asyncHandler(async (req, res) => {
+    const { reportId } = req.params;
+    const { remarks } = req.body;
+    const { userId } = req.user;
+
+    if (!req.files || !req.files.completionPhoto || !req.files.completionPhoto[0]) {
+        throw new ApiError(400, "A photo of the finished task is required.");
+    }
+    
+    const completionPhotoLocalPath = req.files.completionPhoto[0].path;
+    const uploadedCompletionPhoto = await uploadOnCloudinary(completionPhotoLocalPath);
+    if (!uploadedCompletionPhoto) {
+        throw new ApiError(500, "Failed to upload completion photo to cloud service.");
+    }
+    const completionPhotoUrl = uploadedCompletionPhoto.secure_url;
+
+    const report = await Report.findOne({ reportId });
+    if (!report) {
+        throw new ApiError(404, "Report not found.");
+    }
+
+    const previousStatus = report.status;
+    
+    report.status = 'resolved';
+    report.completion_photo_url = completionPhotoUrl;
+    await report.save();
+
+    await ReportHistory.create({
+        reportId: report.reportId,
+        previousStatus: previousStatus,
+        newStatus: 'resolved',
+        changedByUserId: userId,
+        remarks: remarks || `Task completed and marked as resolved.`
+    });
+
+    await Notification.create({
+        userId: report.userId,
+        reportId: report.reportId,
+        message: `Your report status has been updated to "resolved".`,
+    });
+
+    return res.status(200).json(
+        new ApiResponse(200, report, `Report resolved successfully.`)
+    );
+});
+
 export {
     isAdmin,
     updateReportStatus,
     assignReport,
+    resolveReport
 };

@@ -1,7 +1,8 @@
 import express from 'express';
-import { updateReportStatus, assignReport, isAdmin } from '../controllers/admin.controller.js';
+import { updateReportStatus, assignReport, resolveReport } from '../controllers/admin.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { isDepartmentAdmin } from '../middlewares/departmentAdmin.middleware.js';
+import { uploadMiddleware } from '../middlewares/upload.middleware.js';
 
 const router = express.Router();
 
@@ -13,5 +14,8 @@ router.put('/reports/:reportId/status', isDepartmentAdmin, updateReportStatus);
 
 // Assign a report to an official
 router.post('/reports/:reportId/assign', assignReport);
+
+// New endpoint to mark a report as solved with a photo
+router.post('/reports/:reportId/resolve', uploadMiddleware, resolveReport);
 
 export default router;

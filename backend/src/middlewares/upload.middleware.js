@@ -20,6 +20,8 @@ const storage = multer.diskStorage({
 
 const uploadMiddleware = multer({ storage }).fields([
     { name: 'photo', maxCount: 1 },
+    // Add the new field for the completion photo
+    { name: 'completionPhoto', maxCount: 1 },
     { name: 'voiceRecording', maxCount: 1 }
 ]);
 

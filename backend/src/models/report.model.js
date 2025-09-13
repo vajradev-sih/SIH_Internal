@@ -32,6 +32,11 @@ const reportSchema = new Schema(
             required: true,
             trim: true
         },
+        // New field for the completion photo
+        completion_photo_url: {
+            type: String,
+            trim: true
+        },
         voice_recording_url: {
             type: String,
             trim: true
